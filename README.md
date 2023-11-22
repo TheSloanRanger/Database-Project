@@ -1,2 +1,2 @@
 # Database-Project
-Sahil, Sharin, Spandan, Kyle, Lewis, Ben
+Sahil, Sharon, Spandan, Kyle, Lewis, Ben
