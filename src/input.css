@@ -37,3 +37,16 @@ body {
 #navbar a:not(.btn) {
     @apply hover:underline;
 }
+
+.products {
+    @apply grid grid-cols-4 gap-12 container mt-16;
+}
+.products .product {
+    @apply border border-black text-center;
+}
+
+
+
+#footer {
+    @apply mt-24 text-center border-t py-12;
+}
