@@ -3,14 +3,14 @@ module.exports = {
   content: ['./app.js', './views/*.ejs', './views/partials/*.ejs'],
   theme: {
     container: {
-      centre: true
+      center: true
     },
     extend: {
       fontFamily: {
         sans: ['Roboto', 'sans-serif']
       },
       colors: {
-        'primary': '#001F3F',
+        'primary': '#2C3E50',
         
       }
     },

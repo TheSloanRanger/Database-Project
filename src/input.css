@@ -7,3 +7,33 @@
 body {
     @apply font-sans;
 }
+
+.btn {
+    @apply rounded-md font-medium px-4 py-1.5;
+}
+.btn-primary {
+    @apply bg-primary text-white hover:bg-blue-950;
+}
+
+#banner {
+    @apply bg-primary text-white text-center py-8;
+}
+#banner h2 {
+    @apply text-5xl font-semibold;
+}
+#banner h3 {
+    @apply text-2xl font-semibold mt-4;
+}
+
+#navbar {
+    @apply shadow-md py-4;
+}
+#navbar h1 {
+    @apply font-bold text-4xl;
+}
+#navbar a {
+    @apply text-lg;
+}
+#navbar a:not(.btn) {
+    @apply hover:underline;
+}

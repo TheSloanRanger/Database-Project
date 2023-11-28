@@ -19,3 +19,17 @@ app.get('/', (request, response) => {
         title: 'Home'
     })
 })
+
+app.get('/customer', (request, response) => {
+    response.render('customer', {
+        title: 'Customer View',
+        banner_text: 'Welcome, John Doe'
+    })
+})
+
+// 404 page
+app.use((request, response) => {
+    response.render('404', {
+        title: '404'
+    });
+})
