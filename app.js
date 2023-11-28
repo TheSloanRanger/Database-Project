@@ -12,14 +12,14 @@ app.use(express.static('public'));
 app.use(express.urlencoded());
 app.use(morgan('dev'));
 
-app.listen(3000)
+app.listen(3000) // localhost:3000
 
+// redirect index to customer pages
 app.get('/', (request, response) => {
-    response.render('index', {
-        title: 'Home'
-    })
+    response.redirect('/customer');
 })
 
+// customer page
 app.get('/customer', (request, response) => {
     response.render('customer', {
         title: 'Customer View',
@@ -29,6 +29,7 @@ app.get('/customer', (request, response) => {
 
 // 404 page
 app.use((request, response) => {
+    response.status(404);
     response.render('404', {
         title: '404'
     });

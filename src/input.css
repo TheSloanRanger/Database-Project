@@ -50,3 +50,13 @@ body {
 #footer {
     @apply mt-24 text-center border-t py-12;
 }
+
+#four_oh_four {
+    @apply container text-center py-16;
+}
+#four_oh_four h1 {
+    @apply text-4xl font-semibold;
+}
+#four_oh_four h2 {
+    @apply mt-4 text-xl;
+}
