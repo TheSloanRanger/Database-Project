@@ -5,26 +5,27 @@
     <%- include('./partials/nav-staff.ejs') %>
 
     <div class="products">
-        <div class="product flex flex-col">
+        <div class="product">
             <h3 class="text-3xl font-semibold py-2">Upcoming Shifts</h3>
-            <% for (let i = 0; i < 4; i++){ %>
-                <div class="py-1 border-t border-black">
-                    <h4 class="text-xl font-medium">Monday 23rd</h4>
-                    <p>09:00 - 17:00</p>
-                </div>
-            <% } %>
-            <div class="border-t border-black flex flex-grow flex-col justify-center items-center">
-                <a href="#" class="hover:underline block mx-auto">Show more</a>
+            <div class="overflow-y-auto max-h-72">
+                <% for (let i = 0; i < 16; i++){ %>
+                    <div class="py-1 border-t border-black">
+                        <h4 class="text-xl font-medium">Monday 23rd</h4>
+                        <p>09:00 - 17:00</p>
+                    </div>
+                <% } %>
             </div>
         </div>
 
         <div class="product">
             <h3 class="text-3xl font-semibold py-2 border-b border-black">My Tasks</h3>
-            <ol class="mt-4 text-left px-8 list-decimal">
-                <li>Restock shelves in aisle 3</li>
-                <li>Inventory check in warehouse</li>
-                <li>Assist customers in Electronics Department</li>
-            </ol>
+            <div class="overflow-y-auto max-h-72">
+                <ol class="my-4 text-left px-8 list-decimal">
+                    <li>Restock shelves in aisle 3</li>
+                    <li>Inventory check in warehouse</li>
+                    <li>Assist customers in Electronics Department</li>
+                </ol>
+            </div>
         </div>
 
         <% for (let i = 0; i < 8; i++){ %>
