@@ -1,0 +1,23 @@
+<%- include('./partials/header.ejs') %>
+
+<body>
+    <%- include('./partials/banner.ejs') %>
+    <%- include('./partials/nav-customer.ejs') %>
+
+    <form method="post" class="customer-details">
+        <label>Name</label>
+        <input type="text" name="name">
+
+        <label class="mt-5">Email</label>
+        <input type="email" name="email">
+
+        <label class="mt-5">Phone Number</label>
+        <input type="text" name="phone">
+
+        <label class="mt-5">Address</label>
+        <textarea rows="4" name="address"></textarea>
+
+        <button type="submit" name="customer_details" class="btn btn-primary w-full mt-5">SAVE</button>
+    </form>
+
+<%- include('./partials/footer.ejs') %>
