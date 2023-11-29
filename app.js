@@ -44,7 +44,7 @@ app.post('/manager', (request, response) => {
 })
 
 
-// redirect index to customer pages
+// redirect index to main login page
 app.get("/", (request, response) => {
   response.redirect("/login");
 });
