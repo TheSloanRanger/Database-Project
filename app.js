@@ -21,13 +21,55 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(express.urlencoded());
 app.use(morgan("dev"));
+app.use(express.json());
 
 app.listen(3000); // localhost:3000
 
+
+// handle login form submissions
+app.post('/customer', (request, response) => {
+    const formData = request.body;
+    //response.send(formData);
+    response.redirect('/customer');
+})
+app.post('/staff', (request, response) => {
+    const formData = request.body;
+    //response.send(formData);
+    response.redirect('/staff');
+})
+app.post('/manager', (request, response) => {
+    const formData = request.body;
+    //response.send(formData);
+    response.redirect('/manager');
+})
+
+
 // redirect index to customer pages
 app.get("/", (request, response) => {
-  response.redirect("/customer");
+  response.redirect("/login");
 });
+
+// login pages
+app.get('/login', (request, response) => { // login options
+    response.render('login', {
+        title: 'Login Options'
+    })
+})
+app.get('/login/customer', (request, response) => { // customer login
+    response.render('login_customer', {
+        title: 'Customer Login'
+    })
+})
+app.get('/login/staff', (request, response) => { // staff login
+    response.render('login_staff', {
+        title: 'Staff Login'
+    })
+})
+app.get('/login/manager', (request, response) => { // manager login
+    response.render('login_manager', {
+        title: 'Manager Login'
+    })
+})
 
 // customer page
 app.get('/customer', (request, response) => {

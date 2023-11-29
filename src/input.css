@@ -13,7 +13,7 @@ body {
 }
 
 .btn {
-    @apply rounded-md font-medium px-4 py-1.5;
+    @apply rounded-md font-medium px-4 py-1.5 text-center;
 }
 .btn-primary {
     @apply bg-primary text-white hover:bg-blue-950;
@@ -56,7 +56,7 @@ input, textarea {
     @apply border border-black text-center;
 }
 
-.customer-details {
+form {
     @apply container mt-16 w-1/3;
 }
 
