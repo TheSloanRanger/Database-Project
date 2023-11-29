@@ -26,7 +26,7 @@ app.use(express.json());
 app.listen(3000); // localhost:3000
 
 
-// handle login form submissions
+// handle login form submissions **validate logins against db here**
 app.post('/customer', (request, response) => {
     const formData = request.body;
     //response.send(formData);
