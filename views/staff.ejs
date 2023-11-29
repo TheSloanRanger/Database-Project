@@ -1,0 +1,42 @@
+<%- include('./partials/header.ejs') %>
+
+<body>
+    <%- include('./partials/banner.ejs') %>
+    <%- include('./partials/nav-staff.ejs') %>
+
+    <div class="products">
+        <div class="product">
+            <h3 class="text-3xl font-semibold py-2">Upcoming Shifts</h3>
+            <div class="overflow-y-auto max-h-72">
+                <% for (let i = 0; i < 16; i++){ %>
+                    <div class="py-1 border-t border-black">
+                        <h4 class="text-xl font-medium">Monday 23rd</h4>
+                        <p>09:00 - 17:00</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="product">
+            <h3 class="text-3xl font-semibold py-2 border-b border-black">My Tasks</h3>
+            <div class="overflow-y-auto max-h-72">
+                <ol class="my-4 text-left px-8 list-decimal">
+                    <li>Restock shelves in aisle 3</li>
+                    <li>Inventory check in warehouse</li>
+                    <li>Assist customers in Electronics Department</li>
+                </ol>
+            </div>
+        </div>
+
+        <% for (let i = 0; i < 8; i++){ %>
+        <div class="product">
+            <img src="https://placehold.co/400x200" alt="Product image" class="w-full">
+            <h4 class="font-medium text-lg mt-4">Product Name</h4>
+            <p class="mt-2">Current Stock: <span class="font-medium text-green-500">122</span> Units</p>
+            <p class="mt-2">Restock Threshold: <span class="font-medium">20</span> Units</p>
+            <button type="" class="btn btn-primary mt-6 w-full !rounded-none">Restock</button>
+        </div>
+        <% } %>
+    </div>
+
+<%- include('./partials/footer.ejs') %>

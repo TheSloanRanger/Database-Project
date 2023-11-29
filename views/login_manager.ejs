@@ -1,0 +1,18 @@
+<%- include('./partials/header.ejs') %>
+
+<body>
+    <form method="post" action="/manager">
+        <h1 class="text-center text-2xl font-semibold">Manager Login</h1>
+
+        <label class="mt-5">Email</label>
+        <input type="email" name="email">
+
+        <label class="mt-5">Password</label>
+        <input type="password" name="password">
+
+        <button type="submit" name="login_manager" class="btn btn-primary w-full mt-5">LOGIN</button>
+
+        <a href="/login" class="hover:underline text-center block mt-8 text-sm">Return to login options</a>
+    </form>
+
+<%- include('./partials/footer.ejs') %>
