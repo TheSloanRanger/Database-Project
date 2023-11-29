@@ -49,6 +49,16 @@ app.get('/customer/details', (request, response) => {
     })
 })
 
+// staff page
+app.get('/staff', (request, response) => {
+    response.render('staff', {
+        title: 'Staff View',
+        banner_text: 'Staff View',
+        nav_title: 'Inventory Management',
+        page: request.originalUrl
+    })
+})
+
 // 404 page
 app.use((request, response) => {
   response.status(404);
