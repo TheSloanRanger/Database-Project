@@ -72,7 +72,7 @@ app.post("/login-form", async (request, response) => {
             request.session.user = {
               customerId: customerResults[0].AccountID,
               name: customerResults[0].Name,
-              email: customerResults[0].email,
+              email: customerResults[0].Email,
               type: authResults[0].UserType,
               address: customerResults[0].Address,
               phone: customerResults[0].PhoneNo,
@@ -88,10 +88,11 @@ app.post("/login-form", async (request, response) => {
             if (error) throw error;
 
             request.session.user = {
-              staffId: staffResults[0].Staff_Id,
+              staffId: staffResults[0].Staff_ID,
               branchId: staffResults[0].Branch_ID,
+              shiftId: staffResults[0].Shift_ID,
               name: staffResults[0].Name,
-              email: staffResults[0].email,
+              email: staffResults[0].Email,
               type: authResults[0].UserType,
               address: staffResults[0].Address,
               phone: staffResults[0].PhoneNo,
@@ -107,15 +108,14 @@ app.post("/login-form", async (request, response) => {
             if (error) throw error;
 
             request.session.user = {
-              staffId: managerResults[0].Staff_Id,
+              staffId: managerResults[0].Staff_ID,
               branchId: managerResults[0].Branch_ID,
+              shift_ID: managerResults[0].Shift_ID,
               name: managerResults[0].Name,
-              email: managerResults[0].email,
+              email: managerResults[0].Email,
               type: authResults[0].UserType,
               address: managerResults[0].Address,
               phone: managerResults[0].PhoneNo,
-              branchId: managerResults[0].BranchID,
-              shift,
             };
             response.redirect("/" + authResults[0].UserType);
           }
