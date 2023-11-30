@@ -203,35 +203,43 @@ app.get("/manager/performance", isLoggedIn("Manager"), (request, response) => {
   });
 });
 
-// manager/performance page
-app.get("/manager", (request, response) => {
-  response.render("performance", {
+// manager dashboard page
+app.get("/manager", isLoggedIn("Manager"), (request, response) => {
+  response.render("dashboard", {
     title: "Manager View",
-    banner_text: "Welcome, John Doe",
+    banner_text: "Welcome " + request.session.user.name,
     nav_title: "Dashboard",
     user_session: request.session.user,
   });
 });
 
 // manager manage employees page
-app.get("/manager/manage-employees", (request, response) => {
-  response.render("manage-employees", {
-    title: "Manager View",
-    banner_text: "Welcome, John Doe",
-    nav_title: "Manage Employees",
-    user_session: request.session.user,
-  });
-});
+app.get(
+  "/manager/manage-employees",
+  isLoggedIn("Manager"),
+  (request, response) => {
+    response.render("manage-employees", {
+      title: "Manager View",
+      banner_text: "Welcome " + request.session.user.name,
+      nav_title: "Manage Employees",
+      user_session: request.session.user,
+    });
+  }
+);
 
 // manager employee edit page
-app.get("/manager/manage-employees/edit", (request, response) => {
-  response.render("employees_edit", {
-    title: "Edit Employee",
-    banner_text: "Welcome, John Doe",
-    nav_title: "Edit Employee",
-    user_session: request.session.user,
-  });
-});
+app.get(
+  "/manager/manage-employees/edit",
+  isLoggedIn("Manager"),
+  (request, response) => {
+    response.render("employees_edit", {
+      title: "Edit Employee",
+      banner_text: "Welcome " + request.session.user.name,
+      nav_title: "Edit Employee",
+      user_session: request.session.user,
+    });
+  }
+);
 
 // 404 page
 app.use((request, response) => {
