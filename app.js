@@ -60,26 +60,66 @@ app.post("/login-form", async (request, response) => {
         authResults[0].password
       );
 
-      if (match) {
+      if (!match) {
+        response.redirect("/login");
+      } else if (authResults[0].UserType == "Customer") {
         connection.query(
-          "SELECT * FROM `LoginView` WHERE `email` = ?",
+          "SELECT * FROM `Customer` WHERE `email` = ?",
           [formData.email],
-          function (error, accountResults) {
+          function (error, customerResults) {
             if (error) throw error;
 
             request.session.user = {
-              id: accountResults[0].AccountID,
-              name: accountResults[0].name,
-              email: accountResults[0].email,
-              type: accountResults[0].UserType,
-              address: accountResults[0].Address,
-              phone: accountResults[0].PhoneNo,
+              customerId: customerResults[0].AccountID,
+              name: customerResults[0].Name,
+              email: customerResults[0].email,
+              type: authResults[0].UserType,
+              address: customerResults[0].Address,
+              phone: customerResults[0].PhoneNo,
             };
-            response.redirect("/" + accountResults[0].UserType);
+            response.redirect("/" + authResults[0].UserType);
           }
         );
-      } else {
-        response.redirect("/login");
+      } else if (authResults[0].UserType == "Staff") {
+        connection.query(
+          "SELECT * FROM `Staff` WHERE `email` = ?",
+          [formData.email],
+          function (error, staffResults) {
+            if (error) throw error;
+
+            request.session.user = {
+              staffId: staffResults[0].Staff_Id,
+              branchId: staffResults[0].Branch_ID,
+              name: staffResults[0].Name,
+              email: staffResults[0].email,
+              type: authResults[0].UserType,
+              address: staffResults[0].Address,
+              phone: staffResults[0].PhoneNo,
+            };
+            response.redirect("/" + authResults[0].UserType);
+          }
+        );
+      } else if (authResults[0].UserType == "Manager") {
+        connection.query(
+          "SELECT * FROM `Staff` WHERE `email` = ?",
+          [formData.email],
+          function (error, managerResults) {
+            if (error) throw error;
+
+            request.session.user = {
+              staffId: managerResults[0].Staff_Id,
+              branchId: managerResults[0].Branch_ID,
+              name: managerResults[0].Name,
+              email: managerResults[0].email,
+              type: authResults[0].UserType,
+              address: managerResults[0].Address,
+              phone: managerResults[0].PhoneNo,
+              branchId: managerResults[0].BranchID,
+              shift,
+            };
+            response.redirect("/" + authResults[0].UserType);
+          }
+        );
       }
     }
   );
