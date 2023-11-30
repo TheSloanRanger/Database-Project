@@ -247,3 +247,81 @@ LEFT JOIN
     Customer ON Account.email = Customer.Email AND Account.UserType = 'Customer'
 LEFT JOIN
     Staff ON Account.email = Staff.Email AND (Account.UserType = 'Staff' OR Account.UserType = 'Manager');
+
+
+CREATE VIEW Customer_Order_View AS
+SELECT
+    Customer.CustomerID,
+    Customer.Name AS CustomerName,
+    Online_Order.Order_ID,
+    Stock.Name AS StockName,
+    Stock.CostPrice,
+    Staff.Name AS StaffName,
+    Item.Item_ID,
+    Item.Stock_ID AS ItemStockID,
+    Item.ExpiryDate
+FROM
+    Customer
+JOIN Online_Order ON Customer.CustomerID = Online_Order.Cust_ID
+JOIN Item ON Online_Order.Order_ID = Item.Order_ID
+JOIN Stock ON Item.Stock_ID = Stock.Stock_ID
+JOIN Staff ON Online_Order.Staff_ID = Staff.Staff_ID;
+
+
+CREATE VIEW Customer_Information_View AS
+SELECT
+    Customer.CustomerID,
+    Customer.Name AS CustomerName,
+    Customer.Email AS CustomerEmail,
+    Customer.Address AS CustomerAddress,
+    Customer.PhoneNo AS CustomerPhoneNo
+FROM
+    Customer
+WHERE
+    Customer.email = request.body.email
+
+
+CREATE VIEW LoginView AS
+SELECT
+    Account.UserID AS AccountID,
+    Account.email AS Email,
+    Account.UserType,
+    CASE
+        WHEN Account.UserType = 'Customer' THEN Customer.Name
+        WHEN Account.UserType = 'Manager' THEN Staff.Name
+        WHEN Account.UserType = 'Staff' THEN Staff.Name
+    END AS Name,
+    CASE
+        WHEN Account.UserType = 'Customer' THEN Customer.Address
+        WHEN Account.UserType = 'Manager' THEN Staff.Address
+        WHEN Account.UserType = 'Staff' THEN Staff.Address
+    END AS Address,
+    CASE
+        WHEN Account.UserType = 'Customer' THEN Customer.PhoneNo
+        WHEN Account.UserType = 'Manager' THEN Staff.Phone_No
+        WHEN Account.UserType = 'Staff' THEN Staff.Phone_No
+    END AS PhoneNo
+FROM
+    Account
+LEFT JOIN
+    Customer ON Account.email = Customer.Email AND Account.UserType = 'Customer'
+LEFT JOIN
+    Staff ON Account.email = Staff.Email AND (Account.UserType = 'Staff' OR Account.UserType = 'Manager');
+
+
+SELECT * FROM `Customer_Order_View` WHERE CustomerID = 1
+
+SELECT
+    Stock.Stock_ID,
+    Stock.Name AS StockName,
+    Stock.CostPrice,
+    Stock.Sup_ID AS StockSupplierID,
+    COUNT(Item.Stock_ID) AS NumberOfItems
+FROM
+    Stock
+LEFT JOIN Item ON Stock.Stock_ID = Item.Stock_ID
+GROUP BY
+    Stock.Stock_ID, Stock.Name, Stock.CostPrice, Stock.Sup_ID
+ORDER BY
+    NumberOfItems DESC;
+
