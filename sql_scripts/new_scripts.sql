@@ -308,9 +308,7 @@ LEFT JOIN
 LEFT JOIN
     Staff ON Account.email = Staff.Email AND (Account.UserType = 'Staff' OR Account.UserType = 'Manager');
 
-
-SELECT * FROM `Customer_Order_View` WHERE CustomerID = 1
-
+ -- Best performing Items:
 SELECT
     Stock.Stock_ID,
     Stock.Name AS StockName,
