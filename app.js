@@ -27,47 +27,23 @@ app.listen(3000); // localhost:3000
 
 
 // handle login form submissions **validate logins against db here**
-app.post('/customer', (request, response) => {
+app.post('/login-form', (request, response) => {
     const formData = request.body;
     //response.send(formData);
+    // **if login type = customer then redirect to /customer etc 
     response.redirect('/customer');
-})
-app.post('/staff', (request, response) => {
-    const formData = request.body;
-    //response.send(formData);
-    response.redirect('/staff');
-})
-app.post('/manager', (request, response) => {
-    const formData = request.body;
-    //response.send(formData);
-    response.redirect('/manager');
 })
 
 
 // redirect index to main login page
 app.get("/", (request, response) => {
   response.redirect("/login");
-});
+})
 
-// login pages
-app.get('/login', (request, response) => { // login options
+// login page
+app.get('/login', (request, response) => {
     response.render('login', {
-        title: 'Login Options'
-    })
-})
-app.get('/login/customer', (request, response) => { // customer login
-    response.render('login_customer', {
-        title: 'Customer Login'
-    })
-})
-app.get('/login/staff', (request, response) => { // staff login
-    response.render('login_staff', {
-        title: 'Staff Login'
-    })
-})
-app.get('/login/manager', (request, response) => { // manager login
-    response.render('login_manager', {
-        title: 'Manager Login'
+        title: 'Login'
     })
 })
 
