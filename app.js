@@ -204,13 +204,20 @@ app.get('/customer/details', isLoggedIn('customer'), (request, response) => {
 })
 
 // staff page
-app.get('/staff', isLoggedIn('staff'), (request, response) => {
-    response.render('staff', {
-        title: 'Staff View',
-        banner_text: 'Staff View',
-        nav_title: 'Inventory Management',
-        page: request.originalUrl,
-        user_session: request.session.user
+app.get('/staff', isLoggedIn('Staff'), (request, response) => {
+    const sqlQuery = `SELECT * FROM Stock`;
+
+    connection.query(sqlQuery, (error, results, fields) => {
+        if (error) throw error;
+
+        response.render('staff', {
+            title: 'Staff View',
+            banner_text: 'Staff View',
+            nav_title: 'Inventory Management',
+            page: request.originalUrl,
+            user_session: request.session.user,
+            data: results
+        })
     })
 })
 
