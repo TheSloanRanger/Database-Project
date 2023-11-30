@@ -75,7 +75,7 @@ app.post("/login-form", async (request, response) => {
               address: accountResults[0].Address,
               phone: accountResults[0].PhoneNo,
             };
-            response.redirect("/customer");
+            response.redirect("/" + accountResults[0].UserType);
           }
         );
       } else {
@@ -109,55 +109,54 @@ app.get("/login", (request, response) => {
 
 function isLoggedIn(type) {
   return (request, response, next) => {
-    /*if (request.session.user){
-            if (request.session.user.type == type){
-                return next();
-            } else {
-                response.redirect('/'+request.session.user.type);
-            }
-        } else {
-            response.redirect('/login');
-        }*/
-    return next(); // remove when login implemented
+    if (request.session.user) {
+      if (request.session.user.type == type) {
+        return next();
+      } else {
+        response.redirect("/" + request.session.user.type);
+      }
+    } else {
+      response.redirect("/login");
+    }
   };
 }
 
 // customer page
-app.get("/customer", isLoggedIn("customer"), (request, response) => {
+app.get("/customer", isLoggedIn("Customer"), (request, response) => {
   response.render("customer", {
     title: "Customer View",
     banner_text: "Welcome " + request.session.user.name,
     nav_title: "Browse Products",
     page: request.originalUrl,
     filter: request.query.filter || "price_desc",
-    customer_session: request.session.user,
+    user_session: request.session.user,
   });
 });
 
 // customer details page
-app.get("/customer/details", isLoggedIn("customer"), (request, response) => {
+app.get("/customer/details", isLoggedIn("Customer"), (request, response) => {
   response.render("customer_details", {
     title: "Your Details",
     banner_text: "Your Details",
     nav_title: "My Account",
     page: request.originalUrl,
-    customer_session: request.session.user,
+    user_session: request.session.user,
   });
 });
 
 // staff page
-app.get("/staff", isLoggedIn("staff"), (request, response) => {
+app.get("/staff", isLoggedIn("Staff"), (request, response) => {
   response.render("staff", {
     title: "Staff View",
     banner_text: "Staff View",
     nav_title: "Inventory Management",
     page: request.originalUrl,
-    customer_session: request.session.user,
+    user_session: request.session.user,
   });
 });
 
 // manager/performance page
-app.get("/manager/performance", (request, response) => {
+app.get("/manager/performance", isLoggedIn("Manager"), (request, response) => {
   response.render("performance", {
     title: "Manager View",
     banner_text: "Welcome, John Doe",
