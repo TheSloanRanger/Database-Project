@@ -197,21 +197,8 @@ app.get("/customer", isLoggedIn("Customer"), (request, response) => {
     })
 });
 
-// customer page
-app.get('/customer', isLoggedIn('Customer'), (request, response) => {
-    response.render('customer', {
-        title: 'Customer View',
-        banner_text: 'Welcome ' + request.session.user.name,
-        nav_title: 'Browse Products',
-        page: request.originalUrl,
-        filter: request.query.filter || 'price_desc',
-        user_session: request.session.user,
-        connection: connection
-    })
-})
-
 // customer details page
-app.get('/customer/details', isLoggedIn('customer'), (request, response) => {
+app.get('/customer/details', isLoggedIn('Customer'), (request, response) => {
     response.render('customer_details', {
         title: 'Your Details',
         banner_text: 'Your Details',
@@ -222,7 +209,7 @@ app.get('/customer/details', isLoggedIn('customer'), (request, response) => {
 })
 
 // staff page
-app.get('/staff', isLoggedIn('staff'), (request, response) => {
+app.get('/staff', isLoggedIn('Staff'), (request, response) => {
     response.render('staff', {
         title: 'Staff View',
         banner_text: 'Staff View',
@@ -233,7 +220,7 @@ app.get('/staff', isLoggedIn('staff'), (request, response) => {
 })
 
 // manager page
-app.get("/manager", isLoggedIn("manager"), (request, response) => {
+app.get("/manager", isLoggedIn("Manager"), (request, response) => {
     response.render("performance", {
         title: "Manager View",
         banner_text: "Welcome, John Doe",
@@ -243,7 +230,7 @@ app.get("/manager", isLoggedIn("manager"), (request, response) => {
 });
 
   // manager manage employees page
-app.get("/manager/manage-employees", isLoggedIn("manager"), (request, response) => {
+app.get("/manager/manage-employees", isLoggedIn("Manager"), (request, response) => {
     response.render("manage-employees", {
       title: "Manager View",
       banner_text: "Welcome " + request.session.user.name,
@@ -254,7 +241,7 @@ app.get("/manager/manage-employees", isLoggedIn("manager"), (request, response) 
 );
 
 // manager employee edit page
-app.get("/manager/manage-employees/edit", isLoggedIn("manager"), (request, response) => {
+app.get("/manager/manage-employees/edit", isLoggedIn("Manager"), (request, response) => {
     response.render("employees_edit", {
       title: "Edit Employee",
       banner_text: "Welcome " + request.session.user.name,
