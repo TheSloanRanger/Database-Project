@@ -1,0 +1,146 @@
+<%- include('./partials/header.ejs') %>
+
+<body>
+  <%- include('./partials/banner.ejs') %> 
+  <%- include('./partials/nav-manager.ejs') %>
+
+  <div class="sales container py-10">
+    <!-- Grid container for the sales section -->
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10">
+      
+      <!-- Title row that spans full width on medium screens and above -->
+      <div class="col-span-1 md:col-span-2 flex justify-center md:justify-start">
+        <h2 class="text-5xl font-medium">Sales</h2>
+      </div>
+
+      <!-- Best Selling Table -->
+      <div class="bg-white shadow rounded-lg overflow-hidden">
+        <table class="table-auto w-full">
+          <thead class="bg-primary">
+            <tr>
+              <th colspan="2" class="text-white text-3xl p-4">Best Selling</th>
+            </tr>
+          </thead>
+          <tbody class="text-center text-xl text-gray-700">
+            <tr>
+              <td class="px-4 py-2 border-b border-gray-200">Product Name</td>
+              <td class="px-4 py-2 border-b border-gray-200">100 Sales</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2 border-b border-gray-200">Product Name</td>
+              <td class="px-4 py-2 border-b border-gray-200">97 Sales</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2 border-b border-gray-200">Product Name</td>
+              <td class="px-4 py-2 border-b border-gray-200">95 Sales</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- New Customers Table -->
+      <div class="bg-white shadow rounded-lg overflow-hidden">
+        <table class="w-full">
+          <thead class="bg-primary">
+            <tr>
+              <th class="text-white text-3xl p-4">New Customers</th>
+            </tr>
+          </thead>
+          <tbody class="text-center text-5xl text-gray-700">
+            <tr>
+              <td class="py-10">10</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Total Sales Table -->
+      <div class="bg-white shadow rounded-lg overflow-hidden">
+        <table class="w-full">
+          <thead class="bg-primary">
+            <tr>
+              <th class="text-white text-3xl p-4">Total Sales</th>
+            </tr>
+          </thead>
+          <tbody class="text-center text-5xl text-gray-700">
+            <tr>
+              <td class="py-10">£25,000</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Total Orders Table -->
+      <div class="bg-white shadow rounded-lg overflow-hidden">
+        <table class="w-full">
+          <thead class="bg-primary">
+            <tr>
+              <th class="text-white text-3xl p-4">Total Orders</th>
+            </tr>
+          </thead>
+          <tbody class="text-center text-5xl text-gray-700">
+            <tr>
+              <td class="py-10">253</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+    
+   <!-- Employee Performance Table -->
+   <div class="employee-performance-container mt-20">
+    <div class="container mx-auto flex justify-between items-center pb-4">
+      <span class="text-5xl font-medium">Employee Performance</span>
+      <select class="p-2 rounded-lg border border-gray-300" id="sort-select">
+        <option value="sales">Sort by Sales</option>
+        <option value="tasksCompleted">Sort by Tasks Completed</option>
+      </select>
+    </div>
+    <div class="container mx-auto">
+      <div class="overflow-hidden shadow-lg rounded-lg">
+        <table class="w-full table-fixed" id="employee-performance-table">
+          <thead class="bg-primary uppercase">
+            <tr>
+              <th class="text-white text-xl text-center p-4 w-1/3">Employee</th>
+              <th class="text-white text-xl text-center p-4 w-1/3">Sales</th>
+              <th class="text-white text-xl text-center p-4 w-1/3">Tasks Completed</th>
+            </tr>
+          </thead>
+          <tbody class="text-gray-700">
+            <tr>
+              <td class="border-b border-gray-200 text-lg text-center p-4">John Doe</td>
+              <td class="border-b border-gray-200 text-lg text-center p-4">£7,000</td>
+              <td class="border-b border-gray-200 text-lg text-center p-4">20</td>
+            </tr>
+            <tr>
+              <td class="border-b border-gray-200 text-lg text-center p-4">Jane Smith</td>
+              <td class="border-b border-gray-200 text-lg text-center p-4">£6,500</td>
+              <td class="border-b border-gray-200 text-lg text-center p-4">18</td>
+            </tr>
+            <tr>
+              <td class="border-b border-gray-200 text-lg text-center p-4">Tom Brown</td>
+              <td class="border-b border-gray-200 text-lg text-center p-4">£7,200</td>
+              <td class="border-b border-gray-200 text-lg text-center p-4">16</td>
+            </tr>
+            <tr>
+              <td class="border-b border-gray-200 text-lg text-center p-4">Oliver Kahn</td>
+              <td class="border-b border-gray-200 text-lg text-center p-4">£5,900</td>
+              <td class="border-b border-gray-200 text-lg text-center p-4">13</td>
+            </tr>
+            <tr>
+              <td class="border-b border-gray-200 text-lg text-center p-4">Marie Wallace</td>
+              <td class="border-b border-gray-200 text-lg text-center p-4">£5,500</td>
+              <td class="border-b border-gray-200 text-lg text-center p-4">12</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+    
+  </div>
+
+  <%- include('./partials/footer.ejs') %>
+</body>
