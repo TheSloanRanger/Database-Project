@@ -6,16 +6,16 @@
 
     <form method="post" class="customer-details">
         <label>Name</label>
-        <input type="text" name="name" value="<%= customer_session.name %>">
+        <input type="text" name="name" value="<%= user_session.name %>">
 
         <label class="mt-5">Email</label>
-        <input type="email" name="email" value="<%= customer_session.email %>">
+        <input type="email" name="email" value="<%= user_session.email %>">
 
         <label class="mt-5">Phone Number</label>
-        <input type="text" name="phone" value="<%= customer_session.phone %>">
+        <input type="text" name="phone" value="<%= user_session.phone %>">
 
         <label class="mt-5">Address</label>
-        <textarea rows="4" name="address"><%= customer_session.address %></textarea>
+        <textarea rows="4" name="address"><%= user_session.address %></textarea>
 
         <button type="submit" name="customer_details" class="btn btn-primary w-full mt-5">SAVE</button>
     </form>

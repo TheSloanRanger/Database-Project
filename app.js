@@ -157,11 +157,58 @@ app.get("/manager/performance", (request, response) => {
 });
 
 // manager page
+app.get('/customer', isLoggedIn('customer'), (request, response) => {
+    response.render('customer', {
+        title: 'Customer View',
+        banner_text: 'Welcome ' + request.session.user.name,
+        nav_title: 'Browse Products',
+        page: request.originalUrl,
+        filter: request.query.filter || 'price_desc',
+        user_session: request.session.user,
+        connection: connection
+    })
+})
+
+// customer details page
+app.get('/customer/details', isLoggedIn('customer'), (request, response) => {
+    response.render('customer_details', {
+        title: 'Your Details',
+        banner_text: 'Your Details',
+        nav_title: 'My Account',
+        page: request.originalUrl,
+        user_session: request.session.user
+    })
+})
+
+// staff page
+app.get('/staff', isLoggedIn('staff'), (request, response) => {
+    response.render('staff', {
+        title: 'Staff View',
+        banner_text: 'Staff View',
+        nav_title: 'Inventory Management',
+        page: request.originalUrl,
+        user_session: request.session.user
+    })
+})
+
+// manager/performance page
+app.get("/manager", (request, response) => {
+    response.render("performance", {
+        title: "Manager View",
+        banner_text: "Welcome, John Doe",
+        nav_title: "Dashboard",
+        user_session: request.session.user
+    });
+});
+
+  // manager manage employees page
 app.get("/manager/manage-employees", (request, response) => {
-  response.render("manage-employees", {
-    title: "Manager View",
-    banner_text: "Welcome, John Doe",
-  });
+    response.render("manage-employees", {
+        title: "Manager View",
+        banner_text: "Welcome, John Doe",
+        nav_title: "Manage Employees",
+        user_session: request.session.user
+    });
 });
 
 // 404 page
