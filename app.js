@@ -241,18 +241,27 @@ app.get("/customer/details", isLoggedIn("Customer"), (request, response) => {
 
 // staff page
 app.get('/staff', isLoggedIn('Staff'), (request, response) => {
-    const sqlQuery = `SELECT * FROM Stock`;
+    const stockQuery = `SELECT * FROM Stock`;
+    const shiftQuery = `
+        SELECT Shift.Shift_ID, Shift.Start_Time, Shift.End_Time
+        FROM Shift
+        INNER JOIN Staff ON Shift.Shift_ID = Staff.Shift_ID
+        WHERE Staff.Staff_ID = ?
+    `
 
-    connection.query(sqlQuery, (error, results, fields) => {
-        if (error) throw error;
+    connection.query(stockQuery, (stockError, stockResults, stockFields) => {
+        if (stockError) throw stockError;
 
-        response.render('staff', {
-            title: 'Staff View',
-            banner_text: 'Staff View',
-            nav_title: 'Inventory Management',
-            page: request.originalUrl,
-            user_session: request.session.user,
-            data: results
+        connection.query(shiftQuery, [request.session.user.staffId], (shiftError, shiftResults, shiftFields) => {
+            response.render('staff', {
+                title: 'Staff View',
+                banner_text: 'Staff View',
+                nav_title: 'Inventory Management',
+                page: request.originalUrl,
+                user_session: request.session.user,
+                stockData: stockResults,
+                shiftData: shiftResults
+            })
         })
     })
 })
