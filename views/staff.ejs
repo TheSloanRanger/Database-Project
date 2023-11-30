@@ -7,7 +7,7 @@
     <div class="products mt-16">
         <div class="product">
             <h3 class="text-3xl font-semibold py-2">Upcoming Shifts</h3>
-            <div class="overflow-y-auto max-h-72">
+            <div class="overflow-y-auto max-h-[21rem]">
                 <% for (let i = 0; i < 16; i++){ %>
                     <div class="py-1 border-t border-black">
                         <h4 class="text-xl font-medium">Monday 23rd</h4>
@@ -28,14 +28,14 @@
             </div>
         </div>
 
-        <% for (let i = 0; i < 8; i++){ %>
-        <div class="product">
-            <img src="https://placehold.co/400x200" alt="Product image" class="w-full">
-            <h4 class="font-medium text-lg mt-4">Product Name</h4>
-            <p class="mt-2">Current Stock: <span class="font-medium text-green-500">122</span> Units</p>
-            <p class="mt-2">Restock Threshold: <span class="font-medium">20</span> Units</p>
-            <button type="" class="btn btn-primary mt-6 w-full !rounded-none">Restock</button>
-        </div>
+        <% for (const i in data){ %>
+            <div class="product">
+                <img src="<%= data[i].ImageLink %>" alt="Product image" class="w-full h-56 object-cover">
+                <h4 class="font-medium text-lg mt-4"><%= data[i].Name %></h4>
+                <p class="mt-2">Current Stock: <span class="font-medium <%= data[i].Count >= 20 ? 'text-green-500':'text-red-500' %>"><%= data[i].Count %></span> Units</p>
+                <p class="mt-2">Restock Threshold: <span class="font-medium">20</span> Units</p>
+                <button type="" class="btn btn-primary mt-6 w-full !rounded-none">Restock</button>
+            </div>
         <% } %>
     </div>
 
