@@ -268,7 +268,7 @@ app.get('/staff', isLoggedIn('Staff'), (request, response) => {
 
 // manager page
 app.get("/manager", isLoggedIn("Manager"), (request, response) => {
-  response.render("performance", {
+  response.render("dashboard", {
     title: "Manager View",
     banner_text: "Welcome, John Doe",
     nav_title: "Dashboard",
@@ -281,11 +281,18 @@ app.get(
   "/manager/manage-employees",
   isLoggedIn("Manager"),
   (request, response) => {
-    response.render("manage-employees", {
-      title: "Manager View",
-      banner_text: "Welcome " + request.session.user.name,
-      nav_title: "Manage Employees",
-      user_session: request.session.user,
+    const sqlQuery = `SELECT * FROM Staff`;
+
+    connection.query(sqlQuery, (error, results) => {
+      if (error) throw error;
+
+      response.render("manage-employees", {
+        title: "Manager View",
+        banner_text: "Welcome " + request.session.user.name,
+        nav_title: "Manage Employees",
+        user_session: request.session.user,
+        data: results,
+      });
     });
   }
 );
@@ -294,12 +301,22 @@ app.get(
 app.get(
   "/manager/manage-employees/edit",
   isLoggedIn("Manager"),
+
   (request, response) => {
-    response.render("employees_edit", {
-      title: "Edit Employee",
-      banner_text: "Welcome " + request.session.user.name,
-      nav_title: "Edit Employee",
-      user_session: request.session.user,
+    const { staffID } = request.query;
+
+    const sqlQuery = `SELECT * FROM Staff WHERE Staff_ID = ${staffID}`;
+
+    connection.query(sqlQuery, (error, results) => {
+      if (error) throw error;
+
+      response.render("employees_edit", {
+        title: "Edit Employee",
+        banner_text: "Welcome " + request.session.user.name,
+        nav_title: "Edit Employee",
+        user_session: request.session.user,
+        data: results,
+      });
     });
   }
 );
