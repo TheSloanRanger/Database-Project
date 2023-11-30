@@ -148,76 +148,102 @@ app.get("/login", (request, response) => {
 });
 
 function isLoggedIn(type) {
-  return (request, response, next) => {
-    if (request.session.user) {
-      if (request.session.user.type == type) {
-        return next();
-      } else {
-        response.redirect("/" + request.session.user.type);
-      }
-    } else {
-      response.redirect("/login");
-    }
-  };
+    return (request, response, next) => {
+        if (request.session.user){
+            if (request.session.user.type == type){
+                return next();
+            } else {
+                response.redirect('/'+request.session.user.type);
+            }
+        } else {
+            response.redirect('/login');
+        }
+    };
 }
 
 // customer page
 app.get("/customer", isLoggedIn("Customer"), (request, response) => {
-  response.render("customer", {
-    title: "Customer View",
-    banner_text: "Welcome " + request.session.user.name,
-    nav_title: "Browse Products",
-    page: request.originalUrl,
-    filter: request.query.filter || "price_desc",
-    user_session: request.session.user,
-  });
+    const filter = request.query.filter || 'price_desc';
+    let orderBy;
+
+    switch(filter){
+        case 'price_asc':
+            orderBy = 'CostPrice ASC';
+            break;
+        case 'name_desc':
+            orderBy = 'Name DESC';
+            break;
+        case 'name_asc':
+            orderBy = 'Name ASC';
+            break;
+        default:
+            orderBy = 'CostPrice DESC';
+    }
+
+    const sqlQuery = `SELECT * FROM Stock ORDER BY ${orderBy}`;
+
+    connection.query(sqlQuery, (error, results, fields) => {
+        if (error) throw error;
+        
+        response.render("customer", {
+            title: "Customer View",
+            banner_text: "Welcome " + request.session.user.name,
+            nav_title: "Browse Products",
+            page: request.originalUrl,
+            filter: request.query.filter || "price_desc",
+            user_session: request.session.user,
+            data: results
+        });
+    })
 });
+
+// customer page
+app.get('/customer', isLoggedIn('Customer'), (request, response) => {
+    response.render('customer', {
+        title: 'Customer View',
+        banner_text: 'Welcome ' + request.session.user.name,
+        nav_title: 'Browse Products',
+        page: request.originalUrl,
+        filter: request.query.filter || 'price_desc',
+        user_session: request.session.user,
+        connection: connection
+    })
+})
 
 // customer details page
-app.get("/customer/details", isLoggedIn("Customer"), (request, response) => {
-  response.render("customer_details", {
-    title: "Your Details",
-    banner_text: "Your Details",
-    nav_title: "My Account",
-    page: request.originalUrl,
-    user_session: request.session.user,
-  });
-});
+app.get('/customer/details', isLoggedIn('customer'), (request, response) => {
+    response.render('customer_details', {
+        title: 'Your Details',
+        banner_text: 'Your Details',
+        nav_title: 'My Account',
+        page: request.originalUrl,
+        user_session: request.session.user
+    })
+})
 
 // staff page
-app.get("/staff", isLoggedIn("Staff"), (request, response) => {
-  response.render("staff", {
-    title: "Staff View",
-    banner_text: "Staff View",
-    nav_title: "Inventory Management",
-    page: request.originalUrl,
-    user_session: request.session.user,
-  });
+app.get('/staff', isLoggedIn('staff'), (request, response) => {
+    response.render('staff', {
+        title: 'Staff View',
+        banner_text: 'Staff View',
+        nav_title: 'Inventory Management',
+        page: request.originalUrl,
+        user_session: request.session.user
+    })
+})
+
+// manager page
+app.get("/manager", isLoggedIn("manager"), (request, response) => {
+    response.render("performance", {
+        title: "Manager View",
+        banner_text: "Welcome, John Doe",
+        nav_title: "Dashboard",
+        user_session: request.session.user
+    });
 });
 
-// manager/performance page
-app.get("/manager/performance", isLoggedIn("Manager"), (request, response) => {
-  response.render("performance", {
-    title: "Manager View",
-    banner_text: "Welcome, John Doe",
-  });
-});
-
-// manager dashboard page
-app.get("/manager", isLoggedIn("Manager"), (request, response) => {
-  response.render("dashboard", {
-    title: "Manager View",
-    banner_text: "Welcome " + request.session.user.name,
-    nav_title: "Dashboard",
-    user_session: request.session.user,
-  });
-});
-
-// manager manage employees page
-app.get(
-  "/manager/manage-employees",
-  isLoggedIn("Manager"),
-  (request, response) => {
+  // manager manage employees page
+app.get("/manager/manage-employees", isLoggedIn("manager"), (request, response) => {
     response.render("manage-employees", {
       title: "Manager View",
       banner_text: "Welcome " + request.session.user.name,
@@ -228,10 +254,7 @@ app.get(
 );
 
 // manager employee edit page
-app.get(
-  "/manager/manage-employees/edit",
-  isLoggedIn("Manager"),
-  (request, response) => {
+app.get("/manager/manage-employees/edit", isLoggedIn("manager"), (request, response) => {
     response.render("employees_edit", {
       title: "Edit Employee",
       banner_text: "Welcome " + request.session.user.name,
