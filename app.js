@@ -7,13 +7,22 @@ const mysql = require("mysql");
 
 // express app
 const app = express();
-/*const connection = mysql.createConnection({
-  host: "localhost",
-  user: "test",
-  password: "test",
-  database: "my_db",
+const connection = mysql.createConnection({
+  host: "dbms.cctayzmswrni.us-east-1.rds.amazonaws.com",
+  user: "admin",
+  password: "admin123",
+  port: "3306",
+  timeout: 60000,
+  acquireTimeout: 60000,
 });
-connection.connect();*/
+
+connection.query("SELECT 1 + 1 AS solution", (err, rows, fields) => {
+  if (err) throw err;
+
+  console.log("The solution is: ", rows[0].solution);
+});
+
+connection.end();
 
 // register view engine
 app.set("view engine", "ejs");
