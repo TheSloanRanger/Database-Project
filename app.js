@@ -55,9 +55,33 @@ app.use(session({
 app.post('/login-form', (request, response) => {
     const formData = request.body; // email/password from login form
 
-    request.session.user = { type: 'customer', name: 'Steve Smith', email: 'test@email.com', phone: '0123456789', address: '123 Main Street, Dundee, ABC123' }; // test user to test sessions
-    response.redirect('/customer'); // redirect to page based on user type
-})
+  connection.query(
+    "SELECT * FROM `Account` WHERE `email` = ?",
+    [formData.email],
+    async function (error, results, fields) {
+      if (error) throw error;
+
+      const match = await bcrypt.compare(
+        formData.password,
+        results[0].password
+      );
+
+      if (match) {
+        request.session.user = {
+          id: results[0].UserID,
+          name: results[0].name,
+          email: results[0].email,
+          type: results[0].UserType,
+        };
+        response.redirect("/" + results[0].UserType);
+      } else {
+        response.redirect("/login");
+      }
+
+      console.log(results);
+    }
+  );
+});
 
 // destroy session on logout
 app.get('/logout', (request, response) => {
