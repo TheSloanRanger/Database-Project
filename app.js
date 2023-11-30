@@ -133,7 +133,7 @@ app.get('/staff', isLoggedIn('staff'), (request, response) => {
     })
 })
 
-// manager/performance page
+// manager performance page
 app.get("/manager/performance", (request, response) => {
     response.render("performance", {
       title: "Manager View",
@@ -141,7 +141,7 @@ app.get("/manager/performance", (request, response) => {
     });
   });
 
-  // manager page
+  // manager manage employees page
 app.get("/manager/manage-employees", (request, response) => {
   response.render("manage-employees", {
     title: "Manager View",
