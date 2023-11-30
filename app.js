@@ -110,6 +110,22 @@ app.get('/staff', (request, response) => {
     })
 })
 
+// manager/performance page
+app.get("/performance", (request, response) => {
+    response.render("performance", {
+      title: "Manager View",
+      banner_text: "Welcome, John Doe",
+    });
+  });
+
+  // manager page
+app.get("/manage-employees", (request, response) => {
+  response.render("manage-employees", {
+    title: "Manager View",
+    banner_text: "Welcome, John Doe",
+  });
+});
+
 // 404 page
 app.use((request, response) => {
   response.status(404);
