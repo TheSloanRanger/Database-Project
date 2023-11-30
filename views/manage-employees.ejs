@@ -1,0 +1,71 @@
+<%- include('./partials/header.ejs') %>
+
+<body>
+  <%- include('./partials/banner.ejs') %>
+  <%- include('./partials/nav-manager.ejs') %>
+
+  <!-- Container for manage employees section -->
+  <div class="container mx-auto py-10">
+    <div class="overflow-hidden shadow-lg rounded-lg">
+      <table class="w-full table-fixed">
+        <thead>
+          <tr class="bg-primary text-white uppercase text-sm leading-normal">
+            <th class="py-3 px-6 border-b-2 border-gray-200 text-center w-1/4">Employee</th>
+            <th class="py-3 px-6 border-b-2 border-gray-200 text-center w-1/4">Role</th>
+            <th class="py-3 px-6 border-b-2 border-gray-200 text-center w-1/4">Status</th>
+            <th class="py-3 px-6 border-b-2 border-gray-200 text-center w-1/4">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="text-gray-700">
+          <tr>
+            <td class="py-4 px-6 border-b border-gray-200 text-center">John Doe</td>
+            <td class="py-4 px-6 border-b border-gray-200 text-center">Sales Manager</td>
+            <td class="py-4 px-6 border-b border-gray-200 text-center">Active</td>
+            <td class="py-4 px-6 border-b border-gray-200 text-center">
+              <a href="#" class="text-blue-600 hover:text-blue-800">Edit</a>
+              <a href="#" class="text-red-600 hover:text-red-800 ml-4">Delete</a>
+            </td>
+          </tr>
+          <tr>
+            <td class="py-4 px-6 border-b border-gray-200 text-center">Jane Smith</td>
+            <td class="py-4 px-6 border-b border-gray-200 text-center">Marketing Coordinator</td>
+            <td class="py-4 px-6 border-b border-gray-200 text-center">Inactive</td>
+            <td class="py-4 px-6 border-b border-gray-200 text-center">
+              <a href="#" class="text-blue-600 hover:text-blue-800">Edit</a>
+              <a href="#" class="text-red-600 hover:text-red-800 ml-4">Delete</a>
+            </td>
+          </tr>
+          <tr>
+            <td class="py-4 px-6 border-b border-gray-200 text-center">Tom Brown</td>
+            <td class="py-4 px-6 border-b border-gray-200 text-center">Shopfloor Manager</td>
+            <td class="py-4 px-6 border-b border-gray-200 text-center">Active</td>
+            <td class="py-4 px-6 border-b border-gray-200 text-center">
+              <a href="#" class="text-blue-600 hover:text-blue-800">Edit</a>
+              <a href="#" class="text-red-600 hover:text-red-800 ml-4">Delete</a>
+            </td>
+          </tr>
+          <tr>
+            <td class="py-4 px-6 border-b border-gray-200 text-center">Oliver Kahn</td>
+            <td class="py-4 px-6 border-b border-gray-200 text-center">Shopfloor Assistant</td>
+            <td class="py-4 px-6 border-b border-gray-200 text-center">Active</td>
+            <td class="py-4 px-6 border-b border-gray-200 text-center">
+              <a href="#" class="text-blue-600 hover:text-blue-800">Edit</a>
+              <a href="#" class="text-red-600 hover:text-red-800 ml-4">Delete</a>
+            </td> 
+          </tr>
+          <tr>
+            <td class="py-4 px-6 border-b border-gray-200 text-center">Marie Wallace</td>
+            <td class="py-4 px-6 border-b border-gray-200 text-center">Shopfloor Assistant</td>
+            <td class="py-4 px-6 border-b border-gray-200 text-center">Active</td>
+            <td class="py-4 px-6 border-b border-gray-200 text-center">
+              <a href="#" class="text-blue-600 hover:text-blue-800">Edit</a>
+              <a href="#" class="text-red-600 hover:text-red-800 ml-4">Delete</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <%- include('./partials/footer.ejs') %>
+</body>
