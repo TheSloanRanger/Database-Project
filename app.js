@@ -111,7 +111,7 @@ app.get('/staff', (request, response) => {
 })
 
 // manager/performance page
-app.get("/performance", (request, response) => {
+app.get("/manager/performance", (request, response) => {
     response.render("performance", {
       title: "Manager View",
       banner_text: "Welcome, John Doe",
@@ -119,7 +119,7 @@ app.get("/performance", (request, response) => {
   });
 
   // manager page
-app.get("/manage-employees", (request, response) => {
+app.get("/manager/manage-employees", (request, response) => {
   response.render("manage-employees", {
     title: "Manager View",
     banner_text: "Welcome, John Doe",
