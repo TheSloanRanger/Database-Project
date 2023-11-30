@@ -150,3 +150,4 @@ INNER JOIN Stock
 ON Supplier.Sup_ID=Stock.Sup_ID;
 
 SELECT * FROM Supplier_View;
+

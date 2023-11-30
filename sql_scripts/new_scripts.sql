@@ -323,3 +323,10 @@ GROUP BY
 ORDER BY
     NumberOfItems DESC;
 
+ -- Total sales:
+
+ SELECT
+    SUM(Stock.CostPrice) AS TotalSales
+FROM
+    Stock
+JOIN Item ON Stock.Stock_ID = Item.Stock_ID;
