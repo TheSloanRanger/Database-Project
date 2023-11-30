@@ -2,21 +2,21 @@ const express = require("express");
 const morgan = require("morgan");
 const { exec } = require("child_process");
 
+// bcrypt
+const bcrypt = require("bcrypt");
+
 // sql
 const mysql = require("mysql");
 
 // express app
 const app = express();
 const connection = mysql.createConnection({
-  host: "dbms.cctayzmswrni.us-east-1.rds.amazonaws.com",
+  host: "bigdata-assignment2.cyyydukauqnv.us-east-1.rds.amazonaws.com",
   user: "admin",
-  password: "admin123",
+  password: "bigdatardsmysql",
   port: "3306",
-  timeout: 60000,
-  acquireTimeout: 60000,
+  database: "supermarket",
 });
-
-connection.end();
 
 // register view engine
 app.set("view engine", "ejs");
@@ -46,17 +46,35 @@ app.use(
 );
 
 // handle login form submissions **validate logins against db here**
-app.post("/login-form", (request, response) => {
+app.post("/login-form", async (request, response) => {
   const formData = request.body; // email/password from login form
 
-  request.session.user = {
-    type: "customer",
-    name: "Steve Smith",
-    email: "test@email.com",
-    phone: "0123456789",
-    address: "123 Main Street, Dundee, ABC123",
-  }; // test user to test sessions
-  response.redirect("/customer"); // redirect to page based on user type
+  connection.query(
+    "SELECT * FROM `Account` WHERE `email` = ?",
+    [formData.email],
+    async function (error, results, fields) {
+      if (error) throw error;
+
+      const match = await bcrypt.compare(
+        formData.password,
+        results[0].password
+      );
+
+      if (match) {
+        request.session.user = {
+          id: results[0].id,
+          name: results[0].name,
+          email: results[0].email,
+          type: results[0].type,
+        };
+        response.redirect("/customer");
+      } else {
+        response.redirect("/login");
+      }
+
+      console.log(results);
+    }
+  );
 });
 
 // destroy session on logout
