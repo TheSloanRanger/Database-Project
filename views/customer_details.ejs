@@ -1,23 +1,34 @@
 <%- include('./partials/header.ejs') %>
 
 <body>
-    <%- include('./partials/banner.ejs') %>
-    <%- include('./partials/nav-customer.ejs') %>
+  <%- include('./partials/banner.ejs') %> <%-
+  include('./partials/nav-customer.ejs') %>
 
-    <form method="post" class="customer-details">
-        <label>Name</label>
-        <input type="text" name="name" value="<%= user_session.name %>">
+  <form
+    method="post"
+    class="customer-details"
+    action="/customer/details/update"
+  >
+    <label>Name</label>
+    <input type="text" name="name" value="<%= user_session.name %>" />
 
-        <label class="mt-5">Email</label>
-        <input type="email" name="email" value="<%= user_session.email %>">
+    <label class="mt-5">Email</label>
+    <input type="email" name="email" value="<%= user_session.email %>" />
 
-        <label class="mt-5">Phone Number</label>
-        <input type="text" name="phone" value="<%= user_session.phone %>">
+    <label class="mt-5">Phone Number</label>
+    <input type="text" name="phone" value="<%= user_session.phone %>" />
 
-        <label class="mt-5">Address</label>
-        <textarea rows="4" name="address"><%= user_session.address %></textarea>
+    <label class="mt-5">Address</label>
+    <textarea rows="4" name="address"><%= user_session.address %></textarea>
 
-        <button type="submit" name="customer_details" class="btn btn-primary w-full mt-5">SAVE</button>
-    </form>
+    <button
+      type="submit"
+      name="customer_details"
+      class="btn btn-primary w-full mt-5"
+    >
+      SAVE
+    </button>
+  </form>
 
-<%- include('./partials/footer.ejs') %>
+  <%- include('./partials/footer.ejs') %>
+</body>
