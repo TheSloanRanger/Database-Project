@@ -1,23 +1,30 @@
 <%- include('./partials/header.ejs') %>
 
 <body>
-    <%- include('./partials/banner.ejs') %>
-    <%- include('./partials/nav-manager.ejs') %>
+  <%- include('./partials/banner.ejs') %> <%-
+  include('./partials/nav-manager.ejs') %>
 
-    <form method="post">
-        <label>Name</label>
-        <input type="text" name="name" value="...">
+  <form method="post">
+    <label>Name</label>
+    <input type="text" name="name" value=" <%= data[0].Name %>" />
 
-        <label class="mt-5">Email</label>
-        <input type="email" name="email" value="...">
+    <label class="mt-5">Email</label>
+    <input type="email" name="email" value="<%= data[0].Email %>" />
 
-        <label class="mt-5">Phone Number</label>
-        <input type="text" name="phone" value="...">
+    <label class="mt-5">Phone Number</label>
+    <input type="text" name="phone" value="<%= data[0].Phone_No %>" />
 
-        <label class="mt-5">Address</label>
-        <textarea rows="4" name="address">...</textarea>
+    <label class="mt-5">Address</label>
+    <textarea rows="4" name="address"><%= data[0].Address %></textarea>
 
-        <button type="submit" name="employee_edit" class="btn btn-primary w-full mt-5">SAVE</button>
-    </form>
+    <button
+      type="submit"
+      name="employee_edit"
+      class="btn btn-primary w-full mt-5"
+    >
+      SAVE
+    </button>
+  </form>
 
-<%- include('./partials/footer.ejs') %>
+  <%- include('./partials/footer.ejs') %>
+</body>
