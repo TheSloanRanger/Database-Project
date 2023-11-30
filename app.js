@@ -154,6 +154,16 @@ app.get("/manager/manage-employees", (request, response) => {
     });
 });
 
+// manager employee edit page
+app.get("/manager/manage-employees/edit", (request, response) => {
+    response.render("employees_edit", {
+        title: "Edit Employee",
+        banner_text: "Welcome, John Doe",
+        nav_title: "Edit Employee",
+        user_session: request.session.user
+    });
+});
+
 // 404 page
 app.use((request, response) => {
   response.status(404);
