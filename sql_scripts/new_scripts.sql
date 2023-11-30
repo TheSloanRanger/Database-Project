@@ -221,6 +221,28 @@ VALUES
 (4, 'samuel.harrison@gmail.com', '$2b$10$EPsadioveMEFwLGTyICnkeUbGalsFtCwYf6.j.atKb9XcfAIDG06G', 'Customer'),
 (5, 'stella.turner@hotmail.com', '$2b$10$EPsadioveMEFwLGTyICnkeUbGalsFtCwYf6.j.atKb9XcfAIDG06G', 'Customer');
 
+ -- New stock table
+ -- CREATE TABLE
+CREATE TABLE Stock (
+    Stock_ID INT PRIMARY KEY,
+    Name VARCHAR(255),
+    CostPrice FLOAT,
+    Sup_ID INT,
+    Count INT,
+    Description TEXT,
+    ImageLink VARCHAR(255)
+);
+
+-- INSERT INTO STATEMENTS
+INSERT INTO Stock (Stock_ID, Name, CostsPrice, Sup_ID, Count, Description, ImageLink)
+VALUES
+(112, 'Gourmet Cinnamon Spice Blend', 10, 3, 1, 'A delightful blend of premium cinnamon spices, perfect for enhancing the flavor of your favorite dishes.', 'https://example.com/cinnamon-spice-image.jpg'),
+(234, 'Smart LED TV - 55 inch', 399, 5, 1, 'Immerse yourself in stunning visuals with our 55-inch Smart LED TV, featuring advanced technology and a sleek design.', 'https://example.com/smart-led-tv-image.jpg'),
+(987, 'Organic Avocado (Pack of 3)', 1.2, 4, 3, 'Enjoy the creamy goodness of organic avocados. This pack of 3 is perfect for a healthy and delicious treat.', 'https://example.com/organic-avocado-image.jpg'),
+(1245, 'Organic Whole Wheat Bread', 2.5, 1, 1, 'Nutritious and delicious organic whole wheat bread, made with the finest ingredients for a wholesome taste.', 'https://example.com/whole-wheat-bread-image.jpg'),
+(6789, 'Tropical Quench Fruit Juice', 1.2, 2, 1, 'Savor the refreshing taste of tropical fruits in every sip. Our fruit juice is a burst of natural flavors.', 'https://example.com/tropical-fruit-juice-image.jpg');
+
+
 CREATE VIEW LoginView AS
 SELECT
     Account.UserID AS AccountID,
@@ -271,14 +293,12 @@ JOIN Staff ON Online_Order.Staff_ID = Staff.Staff_ID;
 CREATE VIEW Customer_Information_View AS
 SELECT
     Customer.CustomerID,
-    Customer.Name AS CustomerName,
-    Customer.Email AS CustomerEmail,
-    Customer.Address AS CustomerAddress,
-    Customer.PhoneNo AS CustomerPhoneNo
+    Customer.Name,
+    Customer.Email,
+    Customer.Address,
+    Customer.PhoneNo
 FROM
     Customer
-WHERE
-    Customer.email = request.body.email
 
 
 CREATE VIEW LoginView AS
