@@ -64,13 +64,13 @@ app.post("/login-form", async (request, response) => {
         response.redirect("/login");
       } else if (authResults[0].UserType == "Customer") {
         connection.query(
-          "SELECT * FROM `Customer` WHERE `email` = ?",
+          "SELECT * FROM `Customer` WHERE `Email` = ?",
           [formData.email],
           function (error, customerResults) {
             if (error) throw error;
 
             request.session.user = {
-              customerId: customerResults[0].AccountID,
+              customerId: customerResults[0].CustomerID,
               name: customerResults[0].Name,
               email: customerResults[0].Email,
               type: authResults[0].UserType,
@@ -125,6 +125,37 @@ app.post("/login-form", async (request, response) => {
   );
 });
 
+app.post(
+  "/customer/details/update",
+  isLoggedIn("Customer"),
+  (request, response) => {
+    const formData = request.body;
+
+    console.log(request.session);
+
+    connection.query(
+      "UPDATE `Customer` SET `Name` = ?, `Email` = ?, `Address` = ?, `PhoneNo` = ? WHERE `CustomerID` = ?",
+      [
+        formData.name,
+        formData.email,
+        formData.address,
+        formData.phone,
+        request.session.user.customerId,
+      ],
+      function (error, results) {
+        if (error) throw error;
+
+        request.session.user.name = formData.name;
+        request.session.user.email = formData.email;
+        request.session.user.address = formData.address;
+        request.session.user.phone = formData.phone;
+
+        response.redirect("/customer/details");
+      }
+    );
+  }
+);
+
 // destroy session on logout
 app.get("/logout", (request, response) => {
   request.session.destroy((error) => {
@@ -148,65 +179,65 @@ app.get("/login", (request, response) => {
 });
 
 function isLoggedIn(type) {
-    return (request, response, next) => {
-        if (request.session.user){
-            if (request.session.user.type == type){
-                return next();
-            } else {
-                response.redirect('/'+request.session.user.type);
-            }
-        } else {
-            response.redirect('/login');
-        }
-    };
+  return (request, response, next) => {
+    if (request.session.user) {
+      if (request.session.user.type == type) {
+        return next();
+      } else {
+        response.redirect("/" + request.session.user.type);
+      }
+    } else {
+      response.redirect("/login");
+    }
+  };
 }
 
 // customer page
 app.get("/customer", isLoggedIn("Customer"), (request, response) => {
-    const filter = request.query.filter || 'price_desc';
-    let orderBy;
+  const filter = request.query.filter || "price_desc";
+  let orderBy;
 
-    switch(filter){
-        case 'price_asc':
-            orderBy = 'CostPrice ASC';
-            break;
-        case 'name_desc':
-            orderBy = 'Name DESC';
-            break;
-        case 'name_asc':
-            orderBy = 'Name ASC';
-            break;
-        default:
-            orderBy = 'CostPrice DESC';
-    }
+  switch (filter) {
+    case "price_asc":
+      orderBy = "CostPrice ASC";
+      break;
+    case "name_desc":
+      orderBy = "Name DESC";
+      break;
+    case "name_asc":
+      orderBy = "Name ASC";
+      break;
+    default:
+      orderBy = "CostPrice DESC";
+  }
 
-    const sqlQuery = `SELECT * FROM Stock ORDER BY ${orderBy}`;
+  const sqlQuery = `SELECT * FROM Stock ORDER BY ${orderBy}`;
 
-    connection.query(sqlQuery, (error, results, fields) => {
-        if (error) throw error;
-        
-        response.render("customer", {
-            title: "Customer View",
-            banner_text: "Welcome " + request.session.user.name,
-            nav_title: "Browse Products",
-            page: request.originalUrl,
-            filter: request.query.filter || "price_desc",
-            user_session: request.session.user,
-            data: results
-        });
-    })
+  connection.query(sqlQuery, (error, results, fields) => {
+    if (error) throw error;
+
+    response.render("customer", {
+      title: "Customer View",
+      banner_text: "Welcome " + request.session.user.name,
+      nav_title: "Browse Products",
+      page: request.originalUrl,
+      filter: request.query.filter || "price_desc",
+      user_session: request.session.user,
+      data: results,
+    });
+  });
 });
 
 // customer details page
-app.get('/customer/details', isLoggedIn('Customer'), (request, response) => {
-    response.render('customer_details', {
-        title: 'Your Details',
-        banner_text: 'Your Details',
-        nav_title: 'My Account',
-        page: request.originalUrl,
-        user_session: request.session.user
-    })
-})
+app.get("/customer/details", isLoggedIn("Customer"), (request, response) => {
+  response.render("customer_details", {
+    title: "Your Details",
+    banner_text: "Your Details",
+    nav_title: "My Account",
+    page: request.originalUrl,
+    user_session: request.session.user,
+  });
+});
 
 // staff page
 app.get('/staff', isLoggedIn('Staff'), (request, response) => {
@@ -228,16 +259,19 @@ app.get('/staff', isLoggedIn('Staff'), (request, response) => {
 
 // manager page
 app.get("/manager", isLoggedIn("Manager"), (request, response) => {
-    response.render("performance", {
-        title: "Manager View",
-        banner_text: "Welcome, John Doe",
-        nav_title: "Dashboard",
-        user_session: request.session.user
-    });
+  response.render("performance", {
+    title: "Manager View",
+    banner_text: "Welcome, John Doe",
+    nav_title: "Dashboard",
+    user_session: request.session.user,
+  });
 });
 
-  // manager manage employees page
-app.get("/manager/manage-employees", isLoggedIn("Manager"), (request, response) => {
+// manager manage employees page
+app.get(
+  "/manager/manage-employees",
+  isLoggedIn("Manager"),
+  (request, response) => {
     response.render("manage-employees", {
       title: "Manager View",
       banner_text: "Welcome " + request.session.user.name,
@@ -248,7 +282,10 @@ app.get("/manager/manage-employees", isLoggedIn("Manager"), (request, response) 
 );
 
 // manager employee edit page
-app.get("/manager/manage-employees/edit", isLoggedIn("Manager"), (request, response) => {
+app.get(
+  "/manager/manage-employees/edit",
+  isLoggedIn("Manager"),
+  (request, response) => {
     response.render("employees_edit", {
       title: "Edit Employee",
       banner_text: "Welcome " + request.session.user.name,
