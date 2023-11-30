@@ -25,6 +25,9 @@ label {
 input, textarea {
     @apply border border-neutral-400 rounded-md px-2 py-1 block w-full;
 }
+select {
+    @apply border border-neutral-400 rounded-md px-2 py-1;
+}
 
 #banner {
     @apply bg-primary text-white text-center py-8;
@@ -50,7 +53,7 @@ input, textarea {
 }
 
 .products {
-    @apply grid grid-cols-4 gap-12 container mt-16;
+    @apply grid grid-cols-4 gap-12 container;
 }
 .products .product {
     @apply border border-black text-center;

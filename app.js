@@ -77,7 +77,8 @@ app.get('/customer', (request, response) => {
         title: 'Customer View',
         banner_text: 'Welcome, John Doe',
         nav_title: 'Browse Products',
-        page: request.originalUrl
+        page: request.originalUrl,
+        filter: request.query.filter || 'price_desc'
     })
 })
 
