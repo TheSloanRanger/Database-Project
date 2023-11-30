@@ -62,10 +62,10 @@ app.post("/login-form", async (request, response) => {
 
       if (match) {
         request.session.user = {
-          id: results[0].id,
+          id: results[0].UserID,
           name: results[0].name,
           email: results[0].email,
-          type: results[0].type,
+          type: results[0].UserType,
         };
         response.redirect("/customer");
       } else {
