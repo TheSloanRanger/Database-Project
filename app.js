@@ -371,94 +371,102 @@ app.get("/staff", isLoggedIn("Staff"), (request, response) => {
   });
 });
 
-// manager page
+// Manager dashboard page
 app.get("/manager", isLoggedIn("Manager"), (request, response) => {
-  const totalSalesQuery = `
-		SELECT SUM(Stock.CostPrice) AS TotalSales
-		FROM Stock
-		JOIN Item ON Stock.Stock_ID = Item.Stock_ID
-	`;
   const bestSellingQuery = `
-	SELECT
-		Stock.Stock_ID,
-		Stock.Name AS StockName,
-		Stock.CostPrice,
-		Stock.Sup_ID AS StockSupplierID,
-		COUNT(Item.Stock_ID) AS NumberOfItems
-	FROM
-		Stock
-	LEFT JOIN Item ON Stock.Stock_ID = Item.Stock_ID
-	GROUP BY
-		Stock.Stock_ID, Stock.Name, Stock.CostPrice, Stock.Sup_ID
-	ORDER BY
-		NumberOfItems DESC;
-	`;
+    SELECT s.Name, COUNT(*) AS TotalSales
+    FROM Item i
+    JOIN Stock s ON i.Stock_ID = s.Stock_ID
+    JOIN Online_Order o ON i.Order_ID = o.Order_ID
+    GROUP BY s.Name
+    ORDER BY TotalSales DESC
+    LIMIT 3;
+  `;
 
-  const filter = request.query.filter || "sales_desc";
-  let orderBy;
+  const newCustomersQuery = `
+    SELECT COUNT(DISTINCT Cust_ID) AS NewCustomers
+    FROM Online_Order;
+  `;
 
-  switch (filter) {
-    case "items":
-      orderBy = "ItemsSold DESC";
-      break;
-    default:
-      orderBy = "TotalSales DESC";
-  }
-  const performanceQuery = `
-		SELECT
-		Staff.Name AS StaffName,
-		TempSales.Staff_ID,
-		SUM(TempSales.TotalSales) AS TotalSales,
-		SUM(TempSales.TotalItems) AS ItemsSold
-	FROM
-		(
-			SELECT
-				Online_Order.Order_ID,
-				Online_Order.Staff_ID,
-				SUM(Stock.CostPrice) AS TotalSales,
-				COUNT(Item.Item_ID) AS TotalItems
-			FROM
-				Online_Order
-			JOIN Item ON Online_Order.Order_ID = Item.Order_ID
-			JOIN Stock ON Item.Stock_ID = Stock.Stock_ID
-			GROUP BY
-				Online_Order.Order_ID, Online_Order.Staff_ID
-		) AS TempSales
-	JOIN Staff ON TempSales.Staff_ID = Staff.Staff_ID
-	GROUP BY
-		TempSales.Staff_ID, Staff.Name
-	ORDER BY
-    	${orderBy};
-	`;
-  const ordersQuery = `SELECT COUNT(Online_Order.Order_ID) AS TotalOrders FROM Online_Order`;
+  const totalRevenueQuery = `
+    SELECT ROUND(SUM(s.CostPrice), 2) AS Revenue
+    FROM Item i
+    JOIN Stock s ON i.Stock_ID = s.Stock_ID;
+  `;
 
-  connection.query(totalSalesQuery, (error, results, fields) => {
-    connection.query(
-      bestSellingQuery,
-      (bestSellingError, bestSellingResults, bestSellingFields) => {
-        connection.query(
-          performanceQuery,
-          (performanceError, performanceResults, performanceFields) => {
-            connection.query(
-              ordersQuery,
-              (ordersError, ordersResults, ordersFields) => {
-                response.render("dashboard", {
-                  title: "Manager View",
-                  banner_text: "Welcome, " + request.session.user.name,
-                  nav_title: "Dashboard",
-                  user_session: request.session.user,
-                  totalSales: results[0].TotalSales,
-                  bestSelling: bestSellingResults,
-                  employeePerformance: performanceResults,
-                  orders: ordersResults[0].TotalOrders,
-                  filter: filter,
-                });
-              }
-            );
-          }
-        );
+  const totalOrdersQuery = `
+    SELECT COUNT(DISTINCT Order_ID) AS TotalOrders
+    FROM Online_Order;
+  `;
+
+  const employeePerformanceQuery = `
+    SELECT st.Name, COUNT(DISTINCT oo.Order_ID) AS NumberOfOrders, ROUND(SUM(s.CostPrice), 2) AS Revenue
+    FROM Staff st
+    LEFT JOIN Online_Order oo ON st.Staff_ID = oo.Staff_ID
+    LEFT JOIN Item i ON oo.Order_ID = i.Order_ID
+    LEFT JOIN Stock s ON i.Stock_ID = s.Stock_ID
+    GROUP BY st.Name;
+  `;
+
+  // Query for best selling products
+  connection.query(bestSellingQuery, (bestSellingError, bestSellingResults) => {
+    if (bestSellingError) {
+      console.error('Error fetching best-selling products:', bestSellingError);
+      response.status(500).send("Error fetching best-selling products");
+      return;
+    }
+
+    // Query for new customers
+    connection.query(newCustomersQuery, (newCustomersError, newCustomersResults) => {
+      if (newCustomersError) {
+        console.error('Error fetching new customers:', newCustomersError);
+        response.status(500).send("Error fetching new customers");
+        return;
       }
-    );
+
+      // Query for total revenue
+      connection.query(totalRevenueQuery, (totalRevenueError, totalRevenueResults) => {
+        if (totalRevenueError) {
+          console.error('Error fetching revenue:', totalRevenueError);
+          response.status(500).send("Error fetching revenue");
+          return;
+        }
+
+        // Query for total orders
+        connection.query(totalOrdersQuery, (totalOrdersError, totalOrdersResults) => {
+          if (totalOrdersError) {
+            console.error('Error fetching total orders:', totalOrdersError);
+            response.status(500).send("Error fetching total orders");
+            return;
+          }
+
+          // Query for employee performance
+          connection.query(employeePerformanceQuery, (employeePerformanceError, employeePerformanceResults) => {
+            if (employeePerformanceError) {
+              console.error('Error fetching employee performance:', employeePerformanceError);
+              response.status(500).send("Error fetching employee performance");
+              return;
+            }
+
+            // Sort employee performance data by number of orders by default
+            employeePerformanceResults.sort((a, b) => b.NumberOfOrders - a.NumberOfOrders);
+
+            // Render the dashboard view with all results
+            response.render("dashboard", {
+              title: "Manager View",
+              banner_text: "Welcome, John Doe",
+              nav_title: "Dashboard",
+              user_session: request.session.user,
+              bestSellingProducts: bestSellingResults,
+              newCustomers: newCustomersResults[0].NewCustomers,
+              revenue: totalRevenueResults[0].Revenue,
+              totalOrders: totalOrdersResults[0].TotalOrders,
+              employeePerformance: employeePerformanceResults
+            });
+          });
+        });
+      });
+    });
   });
 });
 
