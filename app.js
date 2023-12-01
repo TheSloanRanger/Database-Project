@@ -255,13 +255,18 @@ app.get("/customer", isLoggedIn("Customer"), (request, response) => {
 
 // customer details page
 app.get("/customer/details", isLoggedIn("Customer"), (request, response) => {
-  response.render("customer_details", {
-    title: "Your Details",
-    banner_text: "Your Details",
-    nav_title: "My Account",
-    page: request.originalUrl,
-    user_session: request.session.user,
-  });
+	sqlQuery = `SELECT * FROM Customer_Order_View WHERE CustomerID = ${request.session.user.customerId}`
+	connection.query(sqlQuery, (error, results, fields) => {
+		response.render("customer_details", {
+			title: "Your Details",
+			banner_text: "Your Details",
+			nav_title: "My Account",
+			page: request.originalUrl,
+			user_session: request.session.user,
+			orderHistory: results
+		});
+	})
+
 });
 
 // staff page
