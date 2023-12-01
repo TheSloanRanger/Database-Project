@@ -134,10 +134,9 @@ app.post(
     console.log(request.session);
 
     connection.query(
-      "UPDATE `Customer` SET `Name` = ?, `Email` = ?, `Address` = ?, `PhoneNo` = ? WHERE `CustomerID` = ?",
+      "UPDATE `Customer` SET `Name` = ?, `Address` = ?, `PhoneNo` = ? WHERE `CustomerID` = ?",
       [
         formData.name,
-        formData.email,
         formData.address,
         formData.phone,
         request.session.user.customerId,
@@ -146,7 +145,6 @@ app.post(
         if (error) throw error;
 
         request.session.user.name = formData.name;
-        request.session.user.email = formData.email;
         request.session.user.address = formData.address;
         request.session.user.phone = formData.phone;
 
