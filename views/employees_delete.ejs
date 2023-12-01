@@ -1,0 +1,23 @@
+<%- include('./partials/header.ejs') %>
+
+<body>
+  <%- include('./partials/banner.ejs') %> <%-
+  include('./partials/nav-manager.ejs') %>
+
+  <form method="post" action="/manager/manage-employees/edit/delete">
+    <label>Are you sure you want to delete this employee? </label>
+
+    <label>Name <%= data[0].Name %> </label>
+
+    <button
+      type="submit"
+      name="employee_edit"
+      class="btn btn-primary w-full mt-5"
+      value="<%= data[0].Staff_ID %>"
+    >
+      DELETE
+    </button>
+  </form>
+
+  <%- include('./partials/footer.ejs') %>
+</body>

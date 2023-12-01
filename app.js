@@ -183,6 +183,25 @@ app.post(
   }
 );
 
+app.post(
+  "/manager/manage-employees/delete",
+  isLoggedIn("Manager"),
+  (request, response) => {
+    const formData = request.body;
+
+    const sqlDeleteQuery = "DELETE FROM Staff WHERE Staff_ID = ?";
+    connection.query(
+      sqlDeleteQuery,
+      [formData.employee_delete],
+      function (error, results) {
+        if (error) throw error;
+
+        response.redirect("/manager/manage-employees");
+      }
+    );
+  }
+);
+
 // destroy session on logout
 app.get("/logout", (request, response) => {
   request.session.destroy((error) => {
@@ -268,19 +287,32 @@ app.get("/customer/details", isLoggedIn("Customer"), (request, response) => {
 
 // staff page
 app.get("/staff", isLoggedIn("Staff"), (request, response) => {
-  const sqlQuery = `SELECT * FROM Stock`;
+  const stockQuery = `SELECT * FROM Stock`;
+  const shiftQuery = `
+        SELECT Shift.Shift_ID, Shift.Start_Time, Shift.End_Time
+        FROM Shift
+        INNER JOIN Staff ON Shift.Shift_ID = Staff.Shift_ID
+        WHERE Staff.Staff_ID = ?
+    `;
 
-  connection.query(sqlQuery, (error, results, fields) => {
-    if (error) throw error;
+  connection.query(stockQuery, (stockError, stockResults, stockFields) => {
+    if (stockError) throw stockError;
 
-    response.render("staff", {
-      title: "Staff View",
-      banner_text: "Staff View",
-      nav_title: "Inventory Management",
-      page: request.originalUrl,
-      user_session: request.session.user,
-      data: results,
-    });
+    connection.query(
+      shiftQuery,
+      [request.session.user.staffId],
+      (shiftError, shiftResults, shiftFields) => {
+        response.render("staff", {
+          title: "Staff View",
+          banner_text: "Staff View",
+          nav_title: "Inventory Management",
+          page: request.originalUrl,
+          user_session: request.session.user,
+          stockData: stockResults,
+          shiftData: shiftResults,
+        });
+      }
+    );
   });
 });
 
@@ -332,6 +364,29 @@ app.get(
         title: "Edit Employee",
         banner_text: "Welcome " + request.session.user.name,
         nav_title: "Edit Employee",
+        user_session: request.session.user,
+        data: results,
+      });
+    });
+  }
+);
+
+app.get(
+  "/manager/manage-employees/delete",
+  isLoggedIn("Manager"),
+
+  (request, response) => {
+    const { staffID } = request.query;
+
+    const sqlQuery = `DELETE FROM Staff WHERE Staff_ID = ${staffID}`;
+
+    connection.query(sqlQuery, (error, results) => {
+      if (error) throw error;
+
+      response.render("employees_delete", {
+        title: "Delete Employee",
+        banner_text: "Welcome " + request.session.user.name,
+        nav_title: "Delete Employee",
         user_session: request.session.user,
         data: results,
       });
