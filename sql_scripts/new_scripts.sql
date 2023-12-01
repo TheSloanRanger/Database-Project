@@ -46,6 +46,7 @@ CREATE TABLE `Staff` (
 `Phone_No` varchar(15),
 `Branch_ID` int,
 `Shift_ID` int,
+`Delete_Flag` BOOLEAN,
 PRIMARY KEY (`Staff_ID`),
 FOREIGN KEY (`Branch_ID`) REFERENCES `Branch` (`Branch_ID`)
 );
@@ -350,3 +351,18 @@ ORDER BY
 FROM
     Stock
 JOIN Item ON Stock.Stock_ID = Item.Stock_ID;
+
+
+
+
+-- Ben Inserting mock data for STAFF
+INSERT INTO Staff (Staff_ID, Name, Address, Email, Phone_No, Branch_ID, Shift_ID, Delete_Flag)
+VALUES
+    (100, 'Manager Alice Innit t', '15 Baker Street, Marylebone, London, W1U 8EB, UK', 'alicejohnson@gmail.com', '(44) 20 1234 56', 1001, 3, false),
+    (101, 'Test David Smith', '40 Regent Street, Westminster, London, SW1Y 4PP, UK', 'david.smith@hotmail.com', '(44) 20 1234 56', 1001, 2, false),
+    (102, 'Emily Brown', '41 Market Close, Manchester, UK', 'emily.brown@outlook.co.uk', '(44) 20 1234 56', 1002, 1, false),
+    (103, 'Michael Davis', '12 Cambridge Street, Glasgow, G3 6RU', 'michael.davis@yahoo.com', '(44) 141 234 56', 1003, 3, false),
+    (104, 'Olivia Taylor', '5 New Street, Birmingham, UK', 'olivia.taylor@gmail.com', '(44) 141 234 56', 1004, 1, false),
+    (105, 'Sophia Johnson', '31 Market Street, Manchester, UK', 'sophia.johnson@gmail.com', '(44) 20 1234 56', 1002, 2, false),
+    (106, 'Benjamin Miller', '20 Lime Street, Liverpool, L1 1JQ, UK', 'benjamin.miller@hotmail.com', '(44) 141 234 56', 1005, 1, false),
+    (107, 'Ethan Garcia', '22 Bullring Street, Birmingham, UK', 'ethan.garcia@gmail.com', '(44) 20 1234 56', 1004, 2, false);

@@ -331,7 +331,7 @@ app.get(
   "/manager/manage-employees",
   isLoggedIn("Manager"),
   (request, response) => {
-    const sqlQuery = `SELECT * FROM Staff`;
+    const sqlQuery = `SELECT * FROM Staff WHERE Delete_Flag = 0`;
 
     connection.query(sqlQuery, (error, results) => {
       if (error) throw error;
@@ -378,18 +378,12 @@ app.get(
   (request, response) => {
     const { staffID } = request.query;
 
-    const sqlQuery = `DELETE FROM Staff WHERE Staff_ID = ${staffID}`;
+    const sqlQuery = `UPDATE Staff SET Delete_Flag = ? WHERE Staff_ID = ?`;
 
-    connection.query(sqlQuery, (error, results) => {
+    connection.query(sqlQuery, [1, staffID], (error, results) => {
       if (error) throw error;
 
-      response.render("employees_delete", {
-        title: "Delete Employee",
-        banner_text: "Welcome " + request.session.user.name,
-        nav_title: "Delete Employee",
-        user_session: request.session.user,
-        data: results,
-      });
+      response.redirect("/manager/manage-employees");
     });
   }
 );
