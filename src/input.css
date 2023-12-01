@@ -59,7 +59,7 @@ select {
     @apply border border-black text-center;
 }
 
-form {
+form:not(.sort) {
     @apply container mt-16 w-1/3;
 }
 

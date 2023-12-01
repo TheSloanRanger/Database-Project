@@ -4,14 +4,17 @@
     <%- include('./partials/banner.ejs') %>
     <%- include('./partials/nav-customer.ejs') %>
 
-    <form method="get" class="container text-right mt-16">
-        <label>Sort by</label>
-        <select name="filter" onchange="this.form.submit()">
-            <option value="price_desc" <%= filter == 'price_desc' ? 'selected':'' %>>Price descending</option>
-            <option value="price_asc" <%= filter == 'price_asc' ? 'selected':'' %>>Price ascending</option>
-            <option value="name_desc" <%= filter == 'name_desc' ? 'selected':'' %>>Name descending</option>
-            <option value="name_asc" <%= filter == 'name_asc' ? 'selected':'' %>>Name ascending</option>
-        </select>
+    <form method="get" class="container flex mt-16 sort">
+        <input type="text" name="search" class="w-96" placeholder="Search" value="<%= search || '' %>">
+        <div class="ml-auto">
+            <label>Sort by</label>
+            <select name="filter" onchange="this.form.submit()">
+                <option value="price_desc" <%= filter == 'price_desc' ? 'selected':'' %>>Price descending</option>
+                <option value="price_asc" <%= filter == 'price_asc' ? 'selected':'' %>>Price ascending</option>
+                <option value="name_desc" <%= filter == 'name_desc' ? 'selected':'' %>>Name descending</option>
+                <option value="name_asc" <%= filter == 'name_asc' ? 'selected':'' %>>Name ascending</option>
+            </select>
+        </div>
     </form>
 
     <div class="products mt-4">
@@ -21,7 +24,6 @@
                 <h4 class="font-medium text-lg mt-4"><%= data[i].Name %></h4>
                 <p class="mt-2"><%= data[i].Description %></p>
                 <h5 class="font-semibold text-2xl mt-6">£<%= data[i].CostPrice.toFixed(2) %></h5>
-                <button type="" class="btn btn-primary mt-6 w-full !rounded-none">Add to Cart</button>
             </div>
         <% } %>
     </div>

@@ -355,6 +355,7 @@ JOIN Item ON Stock.Stock_ID = Item.Stock_ID;
 
 
 
+
 -- Ben Inserting mock data for STAFF
 INSERT INTO Staff (Staff_ID, Name, Address, Email, Phone_No, Branch_ID, Shift_ID, Delete_Flag)
 VALUES
@@ -366,3 +367,62 @@ VALUES
     (105, 'Sophia Johnson', '31 Market Street, Manchester, UK', 'sophia.johnson@gmail.com', '(44) 20 1234 56', 1002, 2, false),
     (106, 'Benjamin Miller', '20 Lime Street, Liverpool, L1 1JQ, UK', 'benjamin.miller@hotmail.com', '(44) 141 234 56', 1005, 1, false),
     (107, 'Ethan Garcia', '22 Bullring Street, Birmingham, UK', 'ethan.garcia@gmail.com', '(44) 20 1234 56', 1004, 2, false);
+
+-- Staff performance
+-- Get the staff names and total sales, arranged in descending order-- Get the staff names, total sales, and total items sold, arranged in descending order
+SELECT
+    Staff.Name AS StaffName,
+    TempSales.Staff_ID,
+    SUM(TempSales.TotalSales) AS TotalSales,
+    SUM(TempSales.TotalItems) AS ItemsSold
+FROM
+    (
+        SELECT
+            Online_Order.Order_ID,
+            Online_Order.Staff_ID,
+            SUM(Stock.CostPrice) AS TotalSales,
+            COUNT(Item.Item_ID) AS TotalItems
+        FROM
+            Online_Order
+        JOIN Item ON Online_Order.Order_ID = Item.Order_ID
+        JOIN Stock ON Item.Stock_ID = Stock.Stock_ID
+        GROUP BY
+            Online_Order.Order_ID, Online_Order.Staff_ID
+    ) AS TempSales
+JOIN Staff ON TempSales.Staff_ID = Staff.Staff_ID
+GROUP BY
+    TempSales.Staff_ID, Staff.Name
+ORDER BY
+    TotalSales DESC;
+
+ -- Staff Information View
+CREATE VIEW Staff_Information_View AS
+SELECT
+    Staff.Staff_ID,
+    Staff.Name,
+    Staff.Address,
+    Staff.Email,
+    Staff.Phone_No,
+    Staff.Branch_ID,
+    Staff.Shift_ID,
+    Shift.Start_Time AS ShiftStartTime,
+    Shift.End_Time AS ShiftEndTime
+FROM
+    Staff
+JOIN Shift ON Staff.Shift_ID = Shift.Shift_ID;
+
+-- Displays all staff for each Online_Order. To query for a specific staff member, use Staff_ID
+CREATE VIEW Staff_Order_View AS
+SELECT
+    Online_Order.Order_ID,
+    Online_Order.Staff_ID,
+    Staff.Name AS StaffName,
+    SUM(Stock.CostPrice) AS TotalOrderCost
+FROM
+    Online_Order
+JOIN Item ON Online_Order.Order_ID = Item.Order_ID
+JOIN Stock ON Item.Stock_ID = Stock.Stock_ID
+JOIN Staff ON Online_Order.Staff_ID = Staff.Staff_ID
+GROUP BY
+    Online_Order.Order_ID, Online_Order.Staff_ID, Staff.Name;
+

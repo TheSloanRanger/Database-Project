@@ -1,34 +1,48 @@
 <%- include('./partials/header.ejs') %>
 
 <body>
-  <%- include('./partials/banner.ejs') %> <%-
-  include('./partials/nav-customer.ejs') %>
+<%- include('./partials/banner.ejs') %> <%-
+include('./partials/nav-customer.ejs') %>
 
-  <form
-    method="post"
-    class="customer-details"
-    action="/customer/details/update"
-  >
-    <label>Name</label>
-    <input type="text" name="name" value="<%= user_session.name %>" />
+<form
+	method="post"
+	class="customer-details"
+	action="/customer/details/update"
+>
+	<label>Name</label>
+	<input type="text" name="name" value="<%= user_session.name %>" />
 
-    <label class="mt-5">Email</label>
-    <input type="email" name="email" value="<%= user_session.email %>" />
+	<label class="mt-5">Email</label>
+	<input type="email" name="email" value="<%= user_session.email %>" disabled>
 
-    <label class="mt-5">Phone Number</label>
-    <input type="text" name="phone" value="<%= user_session.phone %>" />
+	<label class="mt-5">Phone Number</label>
+	<input type="text" name="phone" value="<%= user_session.phone %>" />
 
-    <label class="mt-5">Address</label>
-    <textarea rows="4" name="address"><%= user_session.address %></textarea>
+	<label class="mt-5">Address</label>
+	<textarea rows="4" name="address"><%= user_session.address %></textarea>
 
-    <button
-      type="submit"
-      name="customer_details"
-      class="btn btn-primary w-full mt-5"
-    >
-      SAVE
-    </button>
-  </form>
+	<button type="submit" name="customer_details" class="btn btn-primary w-full mt-5">SAVE</button>
+</form>
 
-  <%- include('./partials/footer.ejs') %>
-</body>
+<div class="container mt-16">
+	<h2 class="text-3xl font-semibold text-center">Order History</h2>
+	<div class="overflow-hidden mt-6">
+		<table class="w-1/2 mx-auto table-fixed border border-gray-200">
+			<thead class="">
+				<tr class="border-b">
+					<th class="p-2">Item</th>
+					<th class="p-2">Price</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% for (const i in orderHistory){ %>
+					<tr>
+						<td class="border-b border-gray-200 text-center p-2"><%= orderHistory[i].StockName %></td>
+						<td class="border-b border-gray-200 text-center p-2">£<%= orderHistory[i].CostPrice.toFixed(2) %></td>
+					</tr>
+				<% } %>
+			</tbody>
+		</table>
+	</div>
+</div>
+<%- include('./partials/footer.ejs') %>

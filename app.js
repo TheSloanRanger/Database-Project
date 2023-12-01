@@ -134,10 +134,9 @@ app.post(
     console.log(request.session);
 
     connection.query(
-      "UPDATE `Customer` SET `Name` = ?, `Email` = ?, `Address` = ?, `PhoneNo` = ? WHERE `CustomerID` = ?",
+      "UPDATE `Customer` SET `Name` = ?, `Address` = ?, `PhoneNo` = ? WHERE `CustomerID` = ?",
       [
         formData.name,
-        formData.email,
         formData.address,
         formData.phone,
         request.session.user.customerId,
@@ -146,7 +145,6 @@ app.post(
         if (error) throw error;
 
         request.session.user.name = formData.name;
-        request.session.user.email = formData.email;
         request.session.user.address = formData.address;
         request.session.user.phone = formData.phone;
 
@@ -241,6 +239,7 @@ function isLoggedIn(type) {
 // customer page
 app.get("/customer", isLoggedIn("Customer"), (request, response) => {
   const filter = request.query.filter || "price_desc";
+  const search = request.query.search || "";
   let orderBy;
 
   switch (filter) {
@@ -257,17 +256,22 @@ app.get("/customer", isLoggedIn("Customer"), (request, response) => {
       orderBy = "CostPrice DESC";
   }
 
-  const sqlQuery = `SELECT * FROM Stock ORDER BY ${orderBy}`;
+  let sqlQuery = `SELECT * FROM Stock`;
+  if (search) {
+    sqlQuery += ` WHERE Name LIKE '%${search}%'`;
+  }
+  sqlQuery += ` ORDER BY ${orderBy}`;
 
   connection.query(sqlQuery, (error, results, fields) => {
     if (error) throw error;
 
     response.render("customer", {
       title: "Customer View",
-      banner_text: "Welcome " + request.session.user.name,
+      banner_text: "Welcome, " + request.session.user.name,
       nav_title: "Browse Products",
       page: request.originalUrl,
       filter: request.query.filter || "price_desc",
+      search: search,
       user_session: request.session.user,
       data: results,
     });
@@ -276,18 +280,45 @@ app.get("/customer", isLoggedIn("Customer"), (request, response) => {
 
 // customer details page
 app.get("/customer/details", isLoggedIn("Customer"), (request, response) => {
-  response.render("customer_details", {
-    title: "Your Details",
-    banner_text: "Your Details",
-    nav_title: "My Account",
-    page: request.originalUrl,
-    user_session: request.session.user,
+  sqlQuery = `SELECT * FROM Customer_Order_View WHERE CustomerID = ${request.session.user.customerId}`;
+  connection.query(sqlQuery, (error, results, fields) => {
+    response.render("customer_details", {
+      title: "Your Details",
+      banner_text: "Your Details",
+      nav_title: "My Account",
+      page: request.originalUrl,
+      user_session: request.session.user,
+      orderHistory: results,
+    });
   });
 });
 
 // staff page
 app.get("/staff", isLoggedIn("Staff"), (request, response) => {
-  const stockQuery = `SELECT * FROM Stock`;
+  const filter = request.query.filter || "stock_desc";
+  const search = request.query.search || "";
+  let orderBy;
+
+  switch (filter) {
+    case "stock_asc":
+      orderBy = "Count ASC";
+      break;
+    case "name_desc":
+      orderBy = "Name DESC";
+      break;
+    case "name_asc":
+      orderBy = "Name ASC";
+      break;
+    default:
+      orderBy = "Count DESC";
+  }
+
+  let stockQuery = `SELECT * FROM Stock`;
+  if (search) {
+    stockQuery += ` WHERE Name LIKE '%${search}%'`;
+  }
+  stockQuery += ` ORDER BY ${orderBy}`;
+
   const shiftQuery = `
         SELECT Shift.Shift_ID, Shift.Start_Time, Shift.End_Time
         FROM Shift
@@ -310,6 +341,8 @@ app.get("/staff", isLoggedIn("Staff"), (request, response) => {
           user_session: request.session.user,
           stockData: stockResults,
           shiftData: shiftResults,
+          filter: filter,
+          search: search,
         });
       }
     );
@@ -318,11 +351,92 @@ app.get("/staff", isLoggedIn("Staff"), (request, response) => {
 
 // manager page
 app.get("/manager", isLoggedIn("Manager"), (request, response) => {
-  response.render("dashboard", {
-    title: "Manager View",
-    banner_text: "Welcome, John Doe",
-    nav_title: "Dashboard",
-    user_session: request.session.user,
+  const totalSalesQuery = `
+		SELECT SUM(Stock.CostPrice) AS TotalSales
+		FROM Stock
+		JOIN Item ON Stock.Stock_ID = Item.Stock_ID
+	`;
+  const bestSellingQuery = `
+	SELECT
+		Stock.Stock_ID,
+		Stock.Name AS StockName,
+		Stock.CostPrice,
+		Stock.Sup_ID AS StockSupplierID,
+		COUNT(Item.Stock_ID) AS NumberOfItems
+	FROM
+		Stock
+	LEFT JOIN Item ON Stock.Stock_ID = Item.Stock_ID
+	GROUP BY
+		Stock.Stock_ID, Stock.Name, Stock.CostPrice, Stock.Sup_ID
+	ORDER BY
+		NumberOfItems DESC;
+	`;
+
+  const filter = request.query.filter || "sales_desc";
+  let orderBy;
+
+  switch (filter) {
+    case "items":
+      orderBy = "ItemsSold DESC";
+      break;
+    default:
+      orderBy = "TotalSales DESC";
+  }
+  const performanceQuery = `
+		SELECT
+		Staff.Name AS StaffName,
+		TempSales.Staff_ID,
+		SUM(TempSales.TotalSales) AS TotalSales,
+		SUM(TempSales.TotalItems) AS ItemsSold
+	FROM
+		(
+			SELECT
+				Online_Order.Order_ID,
+				Online_Order.Staff_ID,
+				SUM(Stock.CostPrice) AS TotalSales,
+				COUNT(Item.Item_ID) AS TotalItems
+			FROM
+				Online_Order
+			JOIN Item ON Online_Order.Order_ID = Item.Order_ID
+			JOIN Stock ON Item.Stock_ID = Stock.Stock_ID
+			GROUP BY
+				Online_Order.Order_ID, Online_Order.Staff_ID
+		) AS TempSales
+	JOIN Staff ON TempSales.Staff_ID = Staff.Staff_ID
+	GROUP BY
+		TempSales.Staff_ID, Staff.Name
+	ORDER BY
+    	${orderBy};
+	`;
+  const ordersQuery = `SELECT COUNT(Online_Order.Order_ID) AS TotalOrders FROM Online_Order`;
+
+  connection.query(totalSalesQuery, (error, results, fields) => {
+    connection.query(
+      bestSellingQuery,
+      (bestSellingError, bestSellingResults, bestSellingFields) => {
+        connection.query(
+          performanceQuery,
+          (performanceError, performanceResults, performanceFields) => {
+            connection.query(
+              ordersQuery,
+              (ordersError, ordersResults, ordersFields) => {
+                response.render("dashboard", {
+                  title: "Manager View",
+                  banner_text: "Welcome, " + request.session.user.name,
+                  nav_title: "Dashboard",
+                  user_session: request.session.user,
+                  totalSales: results[0].TotalSales,
+                  bestSelling: bestSellingResults,
+                  employeePerformance: performanceResults,
+                  orders: ordersResults[0].TotalOrders,
+                  filter: filter,
+                });
+              }
+            );
+          }
+        );
+      }
+    );
   });
 });
 
