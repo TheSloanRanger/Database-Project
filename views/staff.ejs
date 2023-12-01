@@ -35,38 +35,42 @@
 
     <div class="products mt-4">
         <div class="product">
-            <h3 class="text-3xl font-semibold py-2">Upcoming Shifts</h3>
-            <div class="overflow-y-auto max-h-[21rem]">
-                <% for (const i in shiftData){ %>
-                    <% 
-                        const startDateString = shiftData[i].Start_Time;
-                        const startTime = new Date(startDateString).toLocaleTimeString([], { hour12:false })
-
-                        const startDate = new Date(startDateString);
-                        const dayOfMonth = addOrdinalSuffix(startDate.getDate());
-                        const month = startDate.toLocaleString('en-UK', { month: 'long'} );
-                        const dayOfWeek = startDate.toLocaleString('en-UK', { weekday: 'long'} );
-                        const formattedDate = `${dayOfWeek}, ${dayOfMonth} ${month}`;
-
-                        const endDateString = shiftData[i].End_Time;
-                        const endTime = new Date(endDateString).toLocaleTimeString([], { hour12:false });
-                    %>
-                    <div class="py-1 border-t border-black shift">
-                        <h4 class="text-xl font-medium"><%= formattedDate %></h4>
-                        <p><%= startTime %> - <%= endTime %></p>
-                    </div>
-                <% } %>
+            <div>
+                <h3 class="text-3xl font-semibold py-2">Upcoming Shifts</h3>
+                <div class="overflow-y-auto max-h-[21rem]">
+                    <% for (const i in shiftData){ %>
+                        <% 
+                            const startDateString = shiftData[i].Start_Time;
+                            const startTime = new Date(startDateString).toLocaleTimeString([], { hour12:false })
+    
+                            const startDate = new Date(startDateString);
+                            const dayOfMonth = addOrdinalSuffix(startDate.getDate());
+                            const month = startDate.toLocaleString('en-UK', { month: 'long'} );
+                            const dayOfWeek = startDate.toLocaleString('en-UK', { weekday: 'long'} );
+                            const formattedDate = `${dayOfWeek}, ${dayOfMonth} ${month}`;
+    
+                            const endDateString = shiftData[i].End_Time;
+                            const endTime = new Date(endDateString).toLocaleTimeString([], { hour12:false });
+                        %>
+                        <div class="py-1 border-t border-black shift">
+                            <h4 class="text-xl font-medium"><%= formattedDate %></h4>
+                            <p><%= startTime %> - <%= endTime %></p>
+                        </div>
+                    <% } %>
+                </div>
             </div>
         </div>
 
         <div class="product">
-            <h3 class="text-3xl font-semibold py-2 border-b border-black">My Tasks</h3>
-            <div class="overflow-y-auto max-h-72">
-                <ol class="my-4 text-left px-8 list-decimal">
-                    <li>Restock shelves in aisle 3</li>
-                    <li>Inventory check in warehouse</li>
-                    <li>Assist customers in Electronics Department</li>
-                </ol>
+            <div>
+                <h3 class="text-3xl font-semibold py-2 border-b border-black">My Tasks</h3>
+                <div class="overflow-y-auto max-h-72">
+                    <ol class="my-4 text-left px-8 list-decimal">
+                        <li>Restock shelves in aisle 3</li>
+                        <li>Inventory check in warehouse</li>
+                        <li>Assist customers in Electronics Department</li>
+                    </ol>
+                </div>
             </div>
         </div>
 
