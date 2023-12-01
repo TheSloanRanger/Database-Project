@@ -313,17 +313,21 @@ app.get("/manager", isLoggedIn("Manager"), (request, response) => {
 	ORDER BY
 		NumberOfItems DESC;
 	`
+	const ordersQuery = `SELECT COUNT(Online_Order.Order_ID) AS TotalOrders FROM Online_Order`
 	
 	connection.query(totalSalesQuery, (error, results, fields) => {
 		connection.query(bestSellingQuery, (bestSellingError, bestSellingResults, bestSellingFields) => {
-			response.render("dashboard", {
-				title: "Manager View",
-				banner_text: "Welcome, John Doe",
-				nav_title: "Dashboard",
-				user_session: request.session.user,
-				totalSales: results[0].TotalSales,
-				bestSelling: bestSellingResults
-			});
+			connection.query(ordersQuery, (ordersError, ordersResults, ordersFields) => {
+				response.render("dashboard", {
+					title: "Manager View",
+					banner_text: "Welcome, John Doe",
+					nav_title: "Dashboard",
+					user_session: request.session.user,
+					totalSales: results[0].TotalSales,
+					bestSelling: bestSellingResults,
+					orders: ordersResults[0].TotalOrders
+				})
+			})
 		})
 	})
 });
