@@ -88,10 +88,12 @@
 <div class="employee-performance-container mt-20">
 	<div class="container mx-auto flex justify-between items-center pb-4">
 	<span class="text-5xl font-medium">Employee Performance</span>
-	<select class="p-2 rounded-lg border border-gray-300" id="sort-select">
-		<option value="sales">Sort by Sales</option>
-		<option value="tasksCompleted">Sort by Tasks Completed</option>
-	</select>
+	<form method="get" class="sort">
+		<select name="filter" class="p-2 rounded-lg border border-gray-300" id="sort-select" onchange="this.form.submit()">
+			<option value="sales" <%= filter == 'sales' ? 'selected':'' %>>Sort by Sales</option>
+			<option value="items" <%= filter == 'items' ? 'selected':'' %>>Sort by Items Sold</option>
+		</select>
+	</form>
 	</div>
 	<div class="container mx-auto">
 	<div class="overflow-hidden shadow-lg rounded-lg">
@@ -100,34 +102,17 @@
 			<tr>
 			<th class="text-white text-xl text-center p-4 w-1/3">Employee</th>
 			<th class="text-white text-xl text-center p-4 w-1/3">Sales</th>
-			<th class="text-white text-xl text-center p-4 w-1/3">Tasks Completed</th>
+			<th class="text-white text-xl text-center p-4 w-1/3">Items Sold</th>
 			</tr>
 		</thead>
 		<tbody class="text-gray-700">
-			<tr>
-			<td class="border-b border-gray-200 text-lg text-center p-4">John Doe</td>
-			<td class="border-b border-gray-200 text-lg text-center p-4">£7,000</td>
-			<td class="border-b border-gray-200 text-lg text-center p-4">20</td>
-			</tr>
-			<tr>
-			<td class="border-b border-gray-200 text-lg text-center p-4">Jane Smith</td>
-			<td class="border-b border-gray-200 text-lg text-center p-4">£6,500</td>
-			<td class="border-b border-gray-200 text-lg text-center p-4">18</td>
-			</tr>
-			<tr>
-			<td class="border-b border-gray-200 text-lg text-center p-4">Tom Brown</td>
-			<td class="border-b border-gray-200 text-lg text-center p-4">£7,200</td>
-			<td class="border-b border-gray-200 text-lg text-center p-4">16</td>
-			</tr>
-			<tr>
-			<td class="border-b border-gray-200 text-lg text-center p-4">Oliver Kahn</td>
-			<td class="border-b border-gray-200 text-lg text-center p-4">£5,900</td>
-			<td class="border-b border-gray-200 text-lg text-center p-4">13</td>
-			</tr>
-			<tr>
-			<td class="border-b border-gray-200 text-lg text-center p-4">Marie Wallace</td>
-			<td class="border-b border-gray-200 text-lg text-center p-4">£5,500</td>
-			<td class="border-b border-gray-200 text-lg text-center p-4">12</td>
+			<% for (const i in employeePerformance){ %>
+				<tr>
+					<td class="border-b border-gray-200 text-lg text-center p-4"><%= employeePerformance[i].StaffName %></td>
+					<td class="border-b border-gray-200 text-lg text-center p-4">£<%= employeePerformance[i].TotalSales.toFixed(2) %></td>
+					<td class="border-b border-gray-200 text-lg text-center p-4"><%= employeePerformance[i].ItemsSold %></td>
+				</tr>
+			<% } %>
 			</tr>
 		</tbody>
 		</table>

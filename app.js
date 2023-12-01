@@ -313,19 +313,60 @@ app.get("/manager", isLoggedIn("Manager"), (request, response) => {
 	ORDER BY
 		NumberOfItems DESC;
 	`
+
+	const filter = request.query.filter || "sales_desc";
+	let orderBy;
+  
+	switch (filter) {
+	  case "items":
+		orderBy = "ItemsSold DESC";
+		break;
+	  default:
+		orderBy = "TotalSales DESC";
+	}
+	const performanceQuery = `
+		SELECT
+		Staff.Name AS StaffName,
+		TempSales.Staff_ID,
+		SUM(TempSales.TotalSales) AS TotalSales,
+		SUM(TempSales.TotalItems) AS ItemsSold
+	FROM
+		(
+			SELECT
+				Online_Order.Order_ID,
+				Online_Order.Staff_ID,
+				SUM(Stock.CostPrice) AS TotalSales,
+				COUNT(Item.Item_ID) AS TotalItems
+			FROM
+				Online_Order
+			JOIN Item ON Online_Order.Order_ID = Item.Order_ID
+			JOIN Stock ON Item.Stock_ID = Stock.Stock_ID
+			GROUP BY
+				Online_Order.Order_ID, Online_Order.Staff_ID
+		) AS TempSales
+	JOIN Staff ON TempSales.Staff_ID = Staff.Staff_ID
+	GROUP BY
+		TempSales.Staff_ID, Staff.Name
+	ORDER BY
+    	${orderBy};
+	`
 	const ordersQuery = `SELECT COUNT(Online_Order.Order_ID) AS TotalOrders FROM Online_Order`
 	
 	connection.query(totalSalesQuery, (error, results, fields) => {
 		connection.query(bestSellingQuery, (bestSellingError, bestSellingResults, bestSellingFields) => {
-			connection.query(ordersQuery, (ordersError, ordersResults, ordersFields) => {
-				response.render("dashboard", {
-					title: "Manager View",
-					banner_text: "Welcome, John Doe",
-					nav_title: "Dashboard",
-					user_session: request.session.user,
-					totalSales: results[0].TotalSales,
-					bestSelling: bestSellingResults,
-					orders: ordersResults[0].TotalOrders
+			connection.query(performanceQuery, (performanceError, performanceResults, performanceFields) => {
+				connection.query(ordersQuery, (ordersError, ordersResults, ordersFields) => {
+					response.render("dashboard", {
+						title: "Manager View",
+						banner_text: "Welcome, John Doe",
+						nav_title: "Dashboard",
+						user_session: request.session.user,
+						totalSales: results[0].TotalSales,
+						bestSelling: bestSellingResults,
+						employeePerformance: performanceResults,
+						orders: ordersResults[0].TotalOrders,
+						filter: filter
+					})
 				})
 			})
 		})
