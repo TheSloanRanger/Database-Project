@@ -156,6 +156,34 @@ app.post(
   }
 );
 
+app.post(
+  "/manager/manage-employees/edit/update",
+  isLoggedIn("Manager"),
+  (request, response) => {
+    const formData = request.body;
+
+    const sqlUpdateQuery =
+      "UPDATE Staff SET Name = ?, Address = ?, Email = ?, Phone_No = ? WHERE Staff_ID = ?";
+
+    connection.query(
+      sqlUpdateQuery,
+      [
+        formData.name,
+        formData.address,
+        formData.email,
+        formData.phone,
+        formData.employee_edit,
+      ],
+      function (error, results) {
+        if (error) throw error;
+
+        console.log(results);
+        response.redirect("/manager/manage-employees");
+      }
+    );
+  }
+);
+
 // destroy session on logout
 app.get("/logout", (request, response) => {
   request.session.destroy((error) => {
