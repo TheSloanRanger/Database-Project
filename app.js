@@ -219,38 +219,44 @@ function isLoggedIn(type) {
 
 // customer page
 app.get("/customer", isLoggedIn("Customer"), (request, response) => {
-  const filter = request.query.filter || "price_desc";
-  let orderBy;
+	const filter = request.query.filter || "price_desc";
+	const search = request.query.search || "";
+	let orderBy;
 
-  switch (filter) {
-    case "price_asc":
-      orderBy = "CostPrice ASC";
-      break;
-    case "name_desc":
-      orderBy = "Name DESC";
-      break;
-    case "name_asc":
-      orderBy = "Name ASC";
-      break;
-    default:
-      orderBy = "CostPrice DESC";
-  }
+	switch (filter) {
+		case "price_asc":
+		orderBy = "CostPrice ASC";
+		break;
+		case "name_desc":
+		orderBy = "Name DESC";
+		break;
+		case "name_asc":
+		orderBy = "Name ASC";
+		break;
+		default:
+		orderBy = "CostPrice DESC";
+	}
 
-  const sqlQuery = `SELECT * FROM Stock ORDER BY ${orderBy}`;
+	let sqlQuery = `SELECT * FROM Stock`
+	if (search){
+		sqlQuery += ` WHERE Name LIKE '%${search}%'`
+	}
+	sqlQuery += ` ORDER BY ${orderBy}`
 
-  connection.query(sqlQuery, (error, results, fields) => {
-    if (error) throw error;
+	connection.query(sqlQuery, (error, results, fields) => {
+		if (error) throw error;
 
-    response.render("customer", {
-      title: "Customer View",
-      banner_text: "Welcome " + request.session.user.name,
-      nav_title: "Browse Products",
-      page: request.originalUrl,
-      filter: request.query.filter || "price_desc",
-      user_session: request.session.user,
-      data: results,
-    });
-  });
+		response.render("customer", {
+		title: "Customer View",
+		banner_text: "Welcome, " + request.session.user.name,
+		nav_title: "Browse Products",
+		page: request.originalUrl,
+		filter: request.query.filter || "price_desc",
+		search: search,
+		user_session: request.session.user,
+		data: results,
+		});
+	});
 });
 
 // customer details page
@@ -363,7 +369,7 @@ app.get("/manager", isLoggedIn("Manager"), (request, response) => {
 				connection.query(ordersQuery, (ordersError, ordersResults, ordersFields) => {
 					response.render("dashboard", {
 						title: "Manager View",
-						banner_text: "Welcome, John Doe",
+						banner_text: "Welcome, " + request.session.user.name,
 						nav_title: "Dashboard",
 						user_session: request.session.user,
 						totalSales: results[0].TotalSales,
