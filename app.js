@@ -181,6 +181,25 @@ app.post(
   }
 );
 
+app.post(
+  "/manager/manage-employees/delete",
+  isLoggedIn("Manager"),
+  (request, response) => {
+    const formData = request.body;
+
+    const sqlDeleteQuery = "DELETE FROM Staff WHERE Staff_ID = ?";
+    connection.query(
+      sqlDeleteQuery,
+      [formData.employee_delete],
+      function (error, results) {
+        if (error) throw error;
+
+        response.redirect("/manager/manage-employees");
+      }
+    );
+  }
+);
+
 // destroy session on logout
 app.get("/logout", (request, response) => {
   request.session.destroy((error) => {
@@ -219,127 +238,133 @@ function isLoggedIn(type) {
 
 // customer page
 app.get("/customer", isLoggedIn("Customer"), (request, response) => {
-	const filter = request.query.filter || "price_desc";
-	const search = request.query.search || "";
-	let orderBy;
+  const filter = request.query.filter || "price_desc";
+  const search = request.query.search || "";
+  let orderBy;
 
-	switch (filter) {
-		case "price_asc":
-		orderBy = "CostPrice ASC";
-		break;
-		case "name_desc":
-		orderBy = "Name DESC";
-		break;
-		case "name_asc":
-		orderBy = "Name ASC";
-		break;
-		default:
-		orderBy = "CostPrice DESC";
-	}
+  switch (filter) {
+    case "price_asc":
+      orderBy = "CostPrice ASC";
+      break;
+    case "name_desc":
+      orderBy = "Name DESC";
+      break;
+    case "name_asc":
+      orderBy = "Name ASC";
+      break;
+    default:
+      orderBy = "CostPrice DESC";
+  }
 
-	let sqlQuery = `SELECT * FROM Stock`
-	if (search){
-		sqlQuery += ` WHERE Name LIKE '%${search}%'`
-	}
-	sqlQuery += ` ORDER BY ${orderBy}`
+  let sqlQuery = `SELECT * FROM Stock`;
+  if (search) {
+    sqlQuery += ` WHERE Name LIKE '%${search}%'`;
+  }
+  sqlQuery += ` ORDER BY ${orderBy}`;
 
-	connection.query(sqlQuery, (error, results, fields) => {
-		if (error) throw error;
+  connection.query(sqlQuery, (error, results, fields) => {
+    if (error) throw error;
 
-		response.render("customer", {
-		title: "Customer View",
-		banner_text: "Welcome, " + request.session.user.name,
-		nav_title: "Browse Products",
-		page: request.originalUrl,
-		filter: request.query.filter || "price_desc",
-		search: search,
-		user_session: request.session.user,
-		data: results,
-		});
-	});
+    response.render("customer", {
+      title: "Customer View",
+      banner_text: "Welcome, " + request.session.user.name,
+      nav_title: "Browse Products",
+      page: request.originalUrl,
+      filter: request.query.filter || "price_desc",
+      search: search,
+      user_session: request.session.user,
+      data: results,
+    });
+  });
 });
 
 // customer details page
 app.get("/customer/details", isLoggedIn("Customer"), (request, response) => {
-	sqlQuery = `SELECT * FROM Customer_Order_View WHERE CustomerID = ${request.session.user.customerId}`
-	connection.query(sqlQuery, (error, results, fields) => {
-		response.render("customer_details", {
-			title: "Your Details",
-			banner_text: "Your Details",
-			nav_title: "My Account",
-			page: request.originalUrl,
-			user_session: request.session.user,
-			orderHistory: results
-		});
-	})
-
+  sqlQuery = `SELECT * FROM Customer_Order_View WHERE CustomerID = ${request.session.user.customerId}`;
+  connection.query(sqlQuery, (error, results, fields) => {
+    response.render("customer_details", {
+      title: "Your Details",
+      banner_text: "Your Details",
+      nav_title: "My Account",
+      page: request.originalUrl,
+      user_session: request.session.user,
+      orderHistory: results,
+    });
+  });
 });
 
 // staff page
-app.get('/staff', isLoggedIn('Staff'), (request, response) => {
-	const filter = request.query.filter || "stock_desc";
-	const search = request.query.search || "";
-	let orderBy;
+app.get("/staff", isLoggedIn("Staff"), (request, response) => {
+  const filter = request.query.filter || "stock_desc";
+  const search = request.query.search || "";
+  let orderBy;
 
-	switch (filter) {
-		case "stock_asc":
-		orderBy = "Count ASC";
-		break;
-		case "name_desc":
-		orderBy = "Name DESC";
-		break;
-		case "name_asc":
-		orderBy = "Name ASC";
-		break;
-		default:
-		orderBy = "Count DESC";
-	}
+  switch (filter) {
+    case "stock_asc":
+      orderBy = "Count ASC";
+      break;
+    case "name_desc":
+      orderBy = "Name DESC";
+      break;
+    case "name_asc":
+      orderBy = "Name ASC";
+      break;
+    default:
+      orderBy = "Count DESC";
+  }
 
-	let stockQuery = `SELECT * FROM Stock`
-	if (search){
-		stockQuery += ` WHERE Name LIKE '%${search}%'`
-	}
-	stockQuery += ` ORDER BY ${orderBy}`
+  let stockQuery = `SELECT * FROM Stock`;
+  if (search) {
+    stockQuery += ` WHERE Name LIKE '%${search}%'`;
+  }
+  stockQuery += ` ORDER BY ${orderBy}`;
 
-    const shiftQuery = `
+  const shiftQuery = `
         SELECT Shift.Shift_ID, Shift.Start_Time, Shift.End_Time
         FROM Shift
         INNER JOIN Staff ON Shift.Shift_ID = Staff.Shift_ID
         WHERE Staff.Staff_ID = ?
-    `
-	
-	orderQuery = `SELECT * FROM CFV WHERE Staff_ID = ${request.session.user.staffId}`
+    `;
 
-    connection.query(stockQuery, (stockError, stockResults, stockFields) => {
-        if (stockError) throw stockError;
+  orderQuery = `SELECT * FROM CFV WHERE Staff_ID = ${request.session.user.staffId}`;
 
-        connection.query(shiftQuery, [request.session.user.staffId], (shiftError, shiftResults, shiftFields) => {
-			connection.query(orderQuery, (orderError, orderResults, orderFields) => {
-				response.render('staff', {
-					title: 'Staff View',
-					banner_text: 'Staff View',
-					nav_title: 'Inventory Management',
-					page: request.originalUrl,
-					user_session: request.session.user,
-					stockData: stockResults,
-					shiftData: shiftResults,
-					filter: filter,
-					search: search,
-					orderHistory: orderResults
-				})
-			})
-        })
-    })
-})
+  connection.query(stockQuery, (stockError, stockResults, stockFields) => {
+    if (stockError) throw stockError;
+
+    connection.query(
+      shiftQuery,
+      [request.session.user.staffId],
+      (shiftError, shiftResults, shiftFields) => {
+        connection.query(
+          orderQuery,
+          (orderError, orderResults, orderFields) => {
+            response.render("staff", {
+              title: "Staff View",
+              banner_text: "Staff View",
+              nav_title: "Inventory Management",
+              page: request.originalUrl,
+              user_session: request.session.user,
+              stockData: stockResults,
+              shiftData: shiftResults,
+              filter: filter,
+              search: search,
+              orderHistory: orderResults,
+            });
+          }
+        );
+      }
+    );
+  });
+});
 
 // manager page
 app.get("/manager", isLoggedIn("Manager"), (request, response) => {
-    const totalSalesQuery = `
+  const totalSalesQuery = `
 		SELECT SUM(Stock.CostPrice) AS TotalSales
 		FROM Stock
 		JOIN Item ON Stock.Stock_ID = Item.Stock_ID
-	`
-	const bestSellingQuery = `
+	`;
+  const bestSellingQuery = `
 	SELECT
 		Stock.Stock_ID,
 		Stock.Name AS StockName,
@@ -353,19 +378,19 @@ app.get("/manager", isLoggedIn("Manager"), (request, response) => {
 		Stock.Stock_ID, Stock.Name, Stock.CostPrice, Stock.Sup_ID
 	ORDER BY
 		NumberOfItems DESC;
-	`
+	`;
 
-	const filter = request.query.filter || "sales_desc";
-	let orderBy;
-  
-	switch (filter) {
-	  case "items":
-		orderBy = "ItemsSold DESC";
-		break;
-	  default:
-		orderBy = "TotalSales DESC";
-	}
-	const performanceQuery = `
+  const filter = request.query.filter || "sales_desc";
+  let orderBy;
+
+  switch (filter) {
+    case "items":
+      orderBy = "ItemsSold DESC";
+      break;
+    default:
+      orderBy = "TotalSales DESC";
+  }
+  const performanceQuery = `
 		SELECT
 		Staff.Name AS StaffName,
 		TempSales.Staff_ID,
@@ -390,28 +415,37 @@ app.get("/manager", isLoggedIn("Manager"), (request, response) => {
 		TempSales.Staff_ID, Staff.Name
 	ORDER BY
     	${orderBy};
-	`
-	const ordersQuery = `SELECT COUNT(Online_Order.Order_ID) AS TotalOrders FROM Online_Order`
-	
-	connection.query(totalSalesQuery, (error, results, fields) => {
-		connection.query(bestSellingQuery, (bestSellingError, bestSellingResults, bestSellingFields) => {
-			connection.query(performanceQuery, (performanceError, performanceResults, performanceFields) => {
-				connection.query(ordersQuery, (ordersError, ordersResults, ordersFields) => {
-					response.render("dashboard", {
-						title: "Manager View",
-						banner_text: "Welcome, " + request.session.user.name,
-						nav_title: "Dashboard",
-						user_session: request.session.user,
-						totalSales: results[0].TotalSales,
-						bestSelling: bestSellingResults,
-						employeePerformance: performanceResults,
-						orders: ordersResults[0].TotalOrders,
-						filter: filter
-					})
-				})
-			})
-		})
-	})
+	`;
+  const ordersQuery = `SELECT COUNT(Online_Order.Order_ID) AS TotalOrders FROM Online_Order`;
+
+  connection.query(totalSalesQuery, (error, results, fields) => {
+    connection.query(
+      bestSellingQuery,
+      (bestSellingError, bestSellingResults, bestSellingFields) => {
+        connection.query(
+          performanceQuery,
+          (performanceError, performanceResults, performanceFields) => {
+            connection.query(
+              ordersQuery,
+              (ordersError, ordersResults, ordersFields) => {
+                response.render("dashboard", {
+                  title: "Manager View",
+                  banner_text: "Welcome, " + request.session.user.name,
+                  nav_title: "Dashboard",
+                  user_session: request.session.user,
+                  totalSales: results[0].TotalSales,
+                  bestSelling: bestSellingResults,
+                  employeePerformance: performanceResults,
+                  orders: ordersResults[0].TotalOrders,
+                  filter: filter,
+                });
+              }
+            );
+          }
+        );
+      }
+    );
+  });
 });
 
 // manager manage employees page
@@ -419,7 +453,7 @@ app.get(
   "/manager/manage-employees",
   isLoggedIn("Manager"),
   (request, response) => {
-    const sqlQuery = `SELECT * FROM Staff`;
+    const sqlQuery = `SELECT * FROM Staff WHERE Delete_Flag = 0`;
 
     connection.query(sqlQuery, (error, results) => {
       if (error) throw error;
@@ -455,6 +489,23 @@ app.get(
         user_session: request.session.user,
         data: results,
       });
+    });
+  }
+);
+
+app.get(
+  "/manager/manage-employees/delete",
+  isLoggedIn("Manager"),
+
+  (request, response) => {
+    const { staffID } = request.query;
+
+    const sqlQuery = `UPDATE Staff SET Delete_Flag = ? WHERE Staff_ID = ?`;
+
+    connection.query(sqlQuery, [1, staffID], (error, results) => {
+      if (error) throw error;
+
+      response.redirect("/manager/manage-employees");
     });
   }
 );
