@@ -352,17 +352,19 @@ FROM
 JOIN Item ON Stock.Stock_ID = Item.Stock_ID;
 
 -- Staff performance
--- Get the staff names and total sales, arranged in descending order
+-- Get the staff names and total sales, arranged in descending order-- Get the staff names, total sales, and total items sold, arranged in descending order
 SELECT
     Staff.Name AS StaffName,
     TempSales.Staff_ID,
-    SUM(TempSales.TotalSales) AS TotalSales
+    SUM(TempSales.TotalSales) AS TotalSales,
+    SUM(TempSales.TotalItems) AS ItemsSold
 FROM
     (
         SELECT
             Online_Order.Order_ID,
             Online_Order.Staff_ID,
-            SUM(Stock.CostPrice) AS TotalSales
+            SUM(Stock.CostPrice) AS TotalSales,
+            COUNT(Item.Item_ID) AS TotalItems
         FROM
             Online_Order
         JOIN Item ON Online_Order.Order_ID = Item.Order_ID
