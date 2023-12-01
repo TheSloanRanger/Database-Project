@@ -177,7 +177,6 @@ app.post(
       function (error, results) {
         if (error) throw error;
 
-        console.log(results);
         response.redirect("/manager/manage-employees");
       }
     );
