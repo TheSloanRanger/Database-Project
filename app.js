@@ -293,12 +293,39 @@ app.get('/staff', isLoggedIn('Staff'), (request, response) => {
 
 // manager page
 app.get("/manager", isLoggedIn("Manager"), (request, response) => {
-  response.render("dashboard", {
-    title: "Manager View",
-    banner_text: "Welcome, John Doe",
-    nav_title: "Dashboard",
-    user_session: request.session.user,
-  });
+    const totalSalesQuery = `
+		SELECT SUM(Stock.CostPrice) AS TotalSales
+		FROM Stock
+		JOIN Item ON Stock.Stock_ID = Item.Stock_ID
+	`
+	const bestSellingQuery = `
+	SELECT
+		Stock.Stock_ID,
+		Stock.Name AS StockName,
+		Stock.CostPrice,
+		Stock.Sup_ID AS StockSupplierID,
+		COUNT(Item.Stock_ID) AS NumberOfItems
+	FROM
+		Stock
+	LEFT JOIN Item ON Stock.Stock_ID = Item.Stock_ID
+	GROUP BY
+		Stock.Stock_ID, Stock.Name, Stock.CostPrice, Stock.Sup_ID
+	ORDER BY
+		NumberOfItems DESC;
+	`
+	
+	connection.query(totalSalesQuery, (error, results, fields) => {
+		connection.query(bestSellingQuery, (bestSellingError, bestSellingResults, bestSellingFields) => {
+			response.render("dashboard", {
+				title: "Manager View",
+				banner_text: "Welcome, John Doe",
+				nav_title: "Dashboard",
+				user_session: request.session.user,
+				totalSales: results[0].TotalSales,
+				bestSelling: bestSellingResults
+			});
+		})
+	})
 });
 
 // manager manage employees page
