@@ -81,4 +81,26 @@
         <% } %>
     </div>
 
+    <div class="container mt-16">
+        <h2 class="text-3xl font-semibold text-center">Order History</h2>
+        <div class="overflow-hidden mt-6">
+            <table class="w-1/2 mx-auto table-fixed border border-gray-200">
+                <thead class="">
+                    <tr class="border-b">
+                        <th class="p-2">Item</th>
+                        <th class="p-2">Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for (const i in orderHistory){ %>
+                        <tr>
+                            <td class="border-b border-gray-200 text-center p-2"><%= orderHistory[i].StockName %></td>
+                            <td class="border-b border-gray-200 text-center p-2">£<%= orderHistory[i].CostPrice.toFixed(2) %></td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div><% console.log(orderHistory) %>
+
 <%- include('./partials/footer.ejs') %>
