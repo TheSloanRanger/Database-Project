@@ -307,22 +307,27 @@ app.get('/staff', isLoggedIn('Staff'), (request, response) => {
         INNER JOIN Staff ON Shift.Shift_ID = Staff.Shift_ID
         WHERE Staff.Staff_ID = ?
     `
+	
+	orderQuery = `SELECT * FROM CFV WHERE Staff_ID = ${request.session.user.staffId}`
 
     connection.query(stockQuery, (stockError, stockResults, stockFields) => {
         if (stockError) throw stockError;
 
         connection.query(shiftQuery, [request.session.user.staffId], (shiftError, shiftResults, shiftFields) => {
-            response.render('staff', {
-                title: 'Staff View',
-                banner_text: 'Staff View',
-                nav_title: 'Inventory Management',
-                page: request.originalUrl,
-                user_session: request.session.user,
-                stockData: stockResults,
-                shiftData: shiftResults,
-				filter: filter,
-				search: search
-            })
+			connection.query(orderQuery, (orderError, orderResults, orderFields) => {
+				response.render('staff', {
+					title: 'Staff View',
+					banner_text: 'Staff View',
+					nav_title: 'Inventory Management',
+					page: request.originalUrl,
+					user_session: request.session.user,
+					stockData: stockResults,
+					shiftData: shiftResults,
+					filter: filter,
+					search: search,
+					orderHistory: orderResults
+				})
+			})
         })
     })
 })
