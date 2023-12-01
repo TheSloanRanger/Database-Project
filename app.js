@@ -181,6 +181,21 @@ app.post(
   }
 );
 
+app.post("/restock-item", isLoggedIn("Staff"), (request, response) => {
+	const formData = request.body;
+
+	console.log(formData);
+
+	const sqlUpdateQuery = `UPDATE Stock SET Count = ? WHERE Stock_ID = ?`
+
+	connection.query(sqlUpdateQuery, [parseInt(formData.newQty) + parseInt(formData.currentQty), formData.stockID], function (error, results){
+		if (error) throw error;
+
+		response.redirect("/staff");
+	})
+})
+
+
 // destroy session on logout
 app.get("/logout", (request, response) => {
   request.session.destroy((error) => {

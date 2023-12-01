@@ -56,7 +56,7 @@ select {
     @apply grid grid-cols-4 gap-12 container;
 }
 .products .product {
-    @apply border border-black text-center;
+    @apply border border-black text-center grid;
 }
 
 form:not(.sort) {

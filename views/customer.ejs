@@ -20,10 +20,15 @@
     <div class="products mt-4">
         <% for (const i in data){ %>
             <div class="product">
+                <div>
                 <img src="<%= data[i].ImageLink %>" alt="Product image" class="w-full">
                 <h4 class="font-medium text-lg mt-4"><%= data[i].Name %></h4>
                 <p class="mt-2"><%= data[i].Description %></p>
                 <h5 class="font-semibold text-2xl mt-6">£<%= data[i].CostPrice.toFixed(2) %></h5>
+                </div>
+                <form method="post" action="/order" class="w-full sort mt-auto !mb-0">
+                    <button type="submit" class="btn btn-primary w-full !rounded-none mt-4">ORDER</button>
+                </form>
             </div>
         <% } %>
     </div>
