@@ -377,3 +377,34 @@ GROUP BY
     TempSales.Staff_ID, Staff.Name
 ORDER BY
     TotalSales DESC;
+
+ -- Staff Information View
+CREATE VIEW Staff_Information_View AS
+SELECT
+    Staff.Staff_ID,
+    Staff.Name,
+    Staff.Address,
+    Staff.Email,
+    Staff.Phone_No,
+    Staff.Branch_ID,
+    Staff.Shift_ID,
+    Shift.Start_Time AS ShiftStartTime,
+    Shift.End_Time AS ShiftEndTime
+FROM
+    Staff
+JOIN Shift ON Staff.Shift_ID = Shift.Shift_ID;
+
+-- Displays all staff for each Online_Order. To query for a specific staff member, use Staff_ID
+CREATE VIEW Staff_Order_View AS
+SELECT
+    Online_Order.Order_ID,
+    Online_Order.Staff_ID,
+    Staff.Name AS StaffName,
+    SUM(Stock.CostPrice) AS TotalOrderCost
+FROM
+    Online_Order
+JOIN Item ON Online_Order.Order_ID = Item.Order_ID
+JOIN Stock ON Item.Stock_ID = Stock.Stock_ID
+JOIN Staff ON Online_Order.Staff_ID = Staff.Staff_ID
+GROUP BY
+    Online_Order.Order_ID, Online_Order.Staff_ID, Staff.Name;
