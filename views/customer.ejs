@@ -4,7 +4,7 @@
     <%- include('./partials/banner.ejs') %>
     <%- include('./partials/nav-customer.ejs') %>
 
-    <form method="get" class="container text-right mt-16">
+    <form method="get" class="container text-right mt-16 sort">
         <label>Sort by</label>
         <select name="filter" onchange="this.form.submit()">
             <option value="price_desc" <%= filter == 'price_desc' ? 'selected':'' %>>Price descending</option>
