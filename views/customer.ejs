@@ -28,6 +28,8 @@
                 </div>
                 <form method="post" action="/order" class="w-full sort mt-auto !mb-0">
                     <button type="submit" class="btn btn-primary w-full !rounded-none mt-4">ORDER</button>
+                    <input type="hidden" name="stockID" value="<%= data[i].Stock_ID %>">
+                    <input type="hidden" name="customerID" value="<%= user_session.customerId %>">
                 </form>
             </div>
         <% } %>
