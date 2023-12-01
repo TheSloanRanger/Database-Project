@@ -277,7 +277,30 @@ app.get("/customer/details", isLoggedIn("Customer"), (request, response) => {
 
 // staff page
 app.get('/staff', isLoggedIn('Staff'), (request, response) => {
-    const stockQuery = `SELECT * FROM Stock`;
+	const filter = request.query.filter || "stock_desc";
+	const search = request.query.search || "";
+	let orderBy;
+
+	switch (filter) {
+		case "stock_asc":
+		orderBy = "Count ASC";
+		break;
+		case "name_desc":
+		orderBy = "Name DESC";
+		break;
+		case "name_asc":
+		orderBy = "Name ASC";
+		break;
+		default:
+		orderBy = "Count DESC";
+	}
+
+	let stockQuery = `SELECT * FROM Stock`
+	if (search){
+		stockQuery += ` WHERE Name LIKE '%${search}%'`
+	}
+	stockQuery += ` ORDER BY ${orderBy}`
+
     const shiftQuery = `
         SELECT Shift.Shift_ID, Shift.Start_Time, Shift.End_Time
         FROM Shift
@@ -296,7 +319,9 @@ app.get('/staff', isLoggedIn('Staff'), (request, response) => {
                 page: request.originalUrl,
                 user_session: request.session.user,
                 stockData: stockResults,
-                shiftData: shiftResults
+                shiftData: shiftResults,
+				filter: filter,
+				search: search
             })
         })
     })
