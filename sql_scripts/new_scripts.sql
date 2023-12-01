@@ -350,3 +350,28 @@ ORDER BY
 FROM
     Stock
 JOIN Item ON Stock.Stock_ID = Item.Stock_ID;
+
+-- Staff performance
+-- Get the staff names and total sales, arranged in descending order
+SELECT
+    Staff.Name AS StaffName,
+    TempSales.Staff_ID,
+    SUM(TempSales.TotalSales) AS TotalSales
+FROM
+    (
+        SELECT
+            Online_Order.Order_ID,
+            Online_Order.Staff_ID,
+            SUM(Stock.CostPrice) AS TotalSales
+        FROM
+            Online_Order
+        JOIN Item ON Online_Order.Order_ID = Item.Order_ID
+        JOIN Stock ON Item.Stock_ID = Stock.Stock_ID
+        GROUP BY
+            Online_Order.Order_ID, Online_Order.Staff_ID
+    ) AS TempSales
+JOIN Staff ON TempSales.Staff_ID = Staff.Staff_ID
+GROUP BY
+    TempSales.Staff_ID, Staff.Name
+ORDER BY
+    TotalSales DESC;
