@@ -19,12 +19,13 @@ CREATE TABLE `Supplier` (
 );
 
 CREATE TABLE `Stock` (
-  `Stock_ID` int NOT NULL AUTO_INCREMENT,
-  `Name` varchar(30),
-  `CostPrice` float,
-  `Sup_ID` int,
-  `Count` int,
-  PRIMARY KEY (`Stock_ID`),
+    `Stock_ID` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `Name` VARCHAR(30),
+    `CostPrice` FLOAT,
+    `Sup_ID` INT,
+    `Count` INT,
+    `Description` VARCHAR(255),
+    `ImageLink` VARCHAR(255),
   FOREIGN KEY (`Sup_ID`) REFERENCES `Supplier` (`Sup_ID`)
 );
 
