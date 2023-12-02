@@ -13,115 +13,142 @@
 		<h2 class="text-3xl font-semibold -mb-6">Sales</h2>
 	</div>
 
-	<!-- Best Selling Table -->
-	<div class="bg-white shadow rounded-lg overflow-hidden">
-		<table class="table-auto w-full">
-		<thead class="bg-primary">
-			<tr>
-			<th colspan="2" class="text-white text-xl p-4">Best Selling</th>
-			</tr>
-		</thead>
-		<tbody class="text-center text-lg text-gray-700">
-			<% for (const i in bestSelling){ %>
-				<% if (i < 3){ %>
-				<tr>
-					<td class="px-4 py-2 border-b border-gray-200"><%= bestSelling[i].StockName %></td>
-					<td class="px-4 py-2 border-b border-gray-200"><%= bestSelling[i].NumberOfItems %> Sales</td>
-				</tr>
-				<% } %>
-			<% } %>
-		</tbody>
-		</table>
-	</div>
+      <!-- Best Selling Table -->
+      <div class="bg-white shadow rounded-lg overflow-hidden">
+        <table class="table-auto w-full">
+          <thead class="bg-primary">
+            <tr>
+              <th colspan="2" class="text-white text-3xl p-4">Best Selling</th>
+            </tr>
+          </thead>
+          <tbody class="text-center text-xl text-gray-700">
+            <% bestSellingProducts.forEach(function(product) { %>
+              <tr>
+                <td class="px-4 py-2 border-b border-gray-200"><%= product.Name %></td>
+                <td class="px-4 py-2 border-b border-gray-200"><%= product.TotalSales %> Sales</td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
 
-	<!-- New Customers Table -->
-	<div class="bg-white shadow rounded-lg overflow-hidden">
-		<table class="w-full">
-		<thead class="bg-primary">
-			<tr>
-			<th class="text-white text-xl p-4">New Customers</th>
-			</tr>
-		</thead>
-		<tbody class="text-center text-4xl text-gray-700">
-			<tr>
-			<td class="py-10">10</td>
-			</tr>
-		</tbody>
-		</table>
-	</div>
+      <!-- New Customers Table -->
+      <div class="bg-white shadow rounded-lg overflow-hidden">
+        <table class="w-full">
+          <thead class="bg-primary">
+            <tr>
+              <th class="text-white text-3xl p-4">New Customers</th>
+            </tr>
+          </thead>
+          <tbody class="text-center text-5xl text-gray-700">
+            <tr>
+              <td class="py-10"><%= newCustomers %></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-	<!-- Total Sales Table -->
-	<div class="bg-white shadow rounded-lg overflow-hidden">
-		<table class="w-full">
-		<thead class="bg-primary">
-			<tr>
-			<th class="text-white text-xl p-4">Total Sales</th>
-			</tr>
-		</thead>
-		<tbody class="text-center text-4xl text-gray-700">
-			<tr>
-			<td class="py-10">£<%= totalSales.toFixed(2) %></td>
-			</tr>
-		</tbody>
-		</table>
-	</div>
+      <!-- Revenue Table -->
+      <div class="bg-white shadow rounded-lg overflow-hidden">
+        <table class="w-full">
+          <thead class="bg-primary">
+            <tr>
+              <th class="text-white text-3xl p-4">Revenue</th>
+            </tr>
+          </thead>
+          <tbody class="text-center text-5xl text-gray-700">
+            <tr>
+              <td class="py-10">£<%= revenue %></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-	<!-- Total Orders Table -->
-	<div class="bg-white shadow rounded-lg overflow-hidden">
-		<table class="w-full">
-		<thead class="bg-primary">
-			<tr>
-			<th class="text-white text-xl p-4">Total Orders</th>
-			</tr>
-		</thead>
-		<tbody class="text-center text-4xl text-gray-700">
-			<tr>
-			<td class="py-10"><%= orders %></td>
-			</tr>
-		</tbody>
-		</table>
-	</div>
-	</div>
+      <!-- Total Orders Table -->
+      <div class="bg-white shadow rounded-lg overflow-hidden">
+        <table class="w-full">
+          <thead class="bg-primary">
+            <tr>
+              <th class="text-white text-3xl p-4">Total Orders</th>
+            </tr>
+          </thead>
+          <tbody class="text-center text-5xl text-gray-700">
+            <tr>
+              <td class="py-10"><%= totalOrders %></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+    
+   <!-- Employee Performance Table -->
+   <div class="employee-performance-container mt-20">
+    <div class="container mx-auto flex justify-between items-center pb-4">
+      <span class="text-5xl font-medium">Employee Performance</span>
+      <select class="p-2 rounded-lg border border-gray-300" id="sort-select">
+        <option value="alphabetical" selected>Sort Alphabetically</option>
+        <option value="numberOfOrders">Sort by No. of Orders</option>
+        <option value="revenue">Sort by Revenue</option>
+      </select>
+    </div>
+    <div class="container mx-auto">
+      <div class="overflow-hidden shadow-lg rounded-lg">
+        <table class="w-full table-fixed" id="employee-performance-table">
+          <thead class="bg-primary uppercase">
+            <tr>
+              <th class="text-white text-xl text-center p-4 w-1/3">Employee</th>
+              <th class="text-white text-xl text-center p-4 w-1/3">No. of Orders</th>
+              <th class="text-white text-xl text-center p-4 w-1/3">Revenue</th>
+            </tr>
+          </thead>
+          <tbody class="text-gray-700">
+            <% employeePerformance.forEach(function(employee) { %>
+              <tr>
+                <td class="border-b border-gray-200 text-lg text-center p-4"><%= employee.Name %></td>
+                <td class="border-b border-gray-200 text-lg text-center p-4"><%= employee.NumberOfOrders %></td>
+                <td class="border-b border-gray-200 text-lg text-center p-4">£<%= employee.Revenue %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
-	
-<!-- Employee Performance Table -->
-<div class="employee-performance-container mt-16">
-	<div class="container mx-auto flex justify-between items-center">
-	<span class="text-3xl font-semibold">Employee Performance</span>
-	<form method="get" class="sort">
-		<select name="filter" class="p-2 rounded-lg border border-gray-300" id="sort-select" onchange="this.form.submit()">
-			<option value="sales" <%= filter == 'sales' ? 'selected':'' %>>Sort by Sales</option>
-			<option value="items" <%= filter == 'items' ? 'selected':'' %>>Sort by Items Sold</option>
-		</select>
-	</form>
-	</div>
-	<div class="container mx-auto">
-	<div class="overflow-hidden shadow-lg rounded-lg">
-		<table class="w-full table-fixed" id="employee-performance-table">
-		<thead class="bg-primary uppercase">
-			<tr>
-			<th class="text-white text-center p-4 w-1/3">Employee</th>
-			<th class="text-white text-center p-4 w-1/3">Sales</th>
-			<th class="text-white text-center p-4 w-1/3">Items Sold</th>
-			</tr>
-		</thead>
-		<tbody class="text-gray-700">
-			<% for (const i in employeePerformance){ %>
-				<tr>
-					<td class="border-b border-gray-200 text-center p-4"><%= employeePerformance[i].StaffName %></td>
-					<td class="border-b border-gray-200 text-center p-4">£<%= employeePerformance[i].TotalSales.toFixed(2) %></td>
-					<td class="border-b border-gray-200 text-center p-4"><%= employeePerformance[i].ItemsSold %></td>
-				</tr>
-			<% } %>
-			</tr>
-		</tbody>
-		</table>
-	</div>
-	</div>
-</div>
-</div>
-	
-</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const selectElement = document.getElementById('sort-select');
+    selectElement.addEventListener('change', sortTable);
+
+    function sortTable() {
+      const sortValue = selectElement.value;
+      const table = document.getElementById('employee-performance-table');
+      const tbody = table.getElementsByTagName('tbody')[0];
+      let rows = Array.from(tbody.getElementsByTagName('tr'));
+
+      if (sortValue === 'numberOfOrders') {
+        // Sort by number of orders
+        rows.sort((a, b) => parseInt(b.cells[1].textContent) - parseInt(a.cells[1].textContent));
+      } else if (sortValue === 'revenue') {
+        // Sort by revenue
+        rows.sort((a, b) => parseFloat(b.cells[2].textContent.replace(/[£,]/g, '')) - parseFloat(a.cells[2].textContent.replace(/[£,]/g, '')));
+      } else {
+        // Sort alphabetically by name
+        rows.sort((a, b) => a.cells[0].textContent.localeCompare(b.cells[0].textContent));
+      }
+
+      // Clear the table body and re-insert the rows
+      tbody.innerHTML = '';
+      rows.forEach(row => tbody.appendChild(row));
+    }
+
+    // Perform the default alphabetical sorting
+    selectElement.value = 'alphabetical';
+    sortTable();
+  });
+</script>
 
 <%- include('./partials/footer.ejs') %>
 </body>
