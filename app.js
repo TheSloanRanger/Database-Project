@@ -89,34 +89,20 @@ app.post("/login-form", async (request, response) => {
 	})
 })
 
-app.post(
-  "/customer/details/update",
-  isLoggedIn("Customer"),
-  (request, response) => {
+// update customer details
+app.post("/customer/details/update", isLoggedIn("Customer"), (request, response) => {
     const formData = request.body;
 
-    console.log(request.session);
+    connection.query('CALL UpdateCustomerDetails(?, ?, ?, ?)', [formData.name, formData.address, formData.phone, request.session.user.customerId], function (error, results) {
+		if (error) throw error;
 
-    connection.query(
-      "UPDATE `Customer` SET `Name` = ?, `Address` = ?, `PhoneNo` = ? WHERE `CustomerID` = ?",
-      [
-        formData.name,
-        formData.address,
-        formData.phone,
-        request.session.user.customerId,
-      ],
-      function (error, results) {
-        if (error) throw error;
+		request.session.user.name = formData.name;
+		request.session.user.address = formData.address;
+		request.session.user.phone = formData.phone;
 
-        request.session.user.name = formData.name;
-        request.session.user.address = formData.address;
-        request.session.user.phone = formData.phone;
-
-        response.redirect("/customer/details");
-      }
-    );
-  }
-);
+		response.redirect("/customer/details");
+	})
+})
 
 app.post(
   "/manager/manage-employees/edit/update",
