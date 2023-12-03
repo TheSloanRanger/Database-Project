@@ -11,12 +11,12 @@ const mysql = require("mysql");
 // express app
 const app = express();
 const connection = mysql.createConnection({
-  host: "bigdata-assignment2.cyyydukauqnv.us-east-1.rds.amazonaws.com",
-  user: "admin",
-  password: "bigdatardsmysql",
-  port: "3306",
-  database: "supermarket",
-});
+	host: "bigdata-assignment2.cyyydukauqnv.us-east-1.rds.amazonaws.com",
+	user: "admin",
+	password: "bigdatardsmysql",
+	port: "3306",
+	database: "supermarket",
+})
 
 // register view engine
 app.set("view engine", "ejs");
@@ -30,20 +30,20 @@ app.listen(3000); // localhost:3000
 
 const crypto = require("crypto");
 const generateSecretKey = () => {
-  return crypto.randomBytes(32).toString("hex");
-};
+  	return crypto.randomBytes(32).toString("hex");
+}
 
 const secretKey = generateSecretKey();
 
 const session = require("express-session");
 app.use(
-  session({
-    secret: secretKey,
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false },
-  })
-);
+	session({
+		secret: secretKey,
+		resave: false,
+		saveUninitialized: true,
+		cookie: { secure: false },
+	})
+)
 
 // handle login form submissions
 app.post("/login-form", async (request, response) => {
@@ -144,38 +144,38 @@ app.post("/restock-item", isLoggedIn("Staff"), (request, response) => {
 
 // destroy session on logout
 app.get("/logout", (request, response) => {
-  request.session.destroy((error) => {
-    if (error) {
-      console.log(error);
-    }
-    response.redirect("/login");
-  });
-});
+	request.session.destroy((error) => {
+		if (error) {
+		console.log(error);
+		}
+		response.redirect("/login");
+	})
+})
 
 // redirect index to main login page
 app.get("/", (request, response) => {
-  response.redirect("/login");
-});
+  	response.redirect("/login");
+})
 
 // login page
 app.get("/login", (request, response) => {
-  response.render("login", {
-    title: "Login",
-  });
-});
+	response.render("login", {
+		title: "Login",
+	})
+})
 
 function isLoggedIn(type) {
-  return (request, response, next) => {
-    if (request.session.user) {
-      if (request.session.user.type == type) {
-        return next();
-      } else {
-        response.redirect("/" + request.session.user.type);
-      }
-    } else {
-      response.redirect("/login");
-    }
-  };
+	return (request, response, next) => {
+		if (request.session.user) {
+			if (request.session.user.type == type) {
+				return next();
+			} else {
+				response.redirect("/" + request.session.user.type);
+			}
+		} else {
+			response.redirect("/login");
+		}
+	}
 }
 
 // customer page
@@ -212,9 +212,9 @@ app.get("/customer", isLoggedIn("Customer"), (request, response) => {
 			search: search,
 			user_session: request.session.user,
 			data: results[0],
-		});
-	});
-});
+		})
+	})
+})
 
 // customer details page
 app.get("/customer/details", isLoggedIn("Customer"), (request, response) => {
@@ -229,9 +229,9 @@ app.get("/customer/details", isLoggedIn("Customer"), (request, response) => {
 			page: request.originalUrl,
 			user_session: request.session.user,
 			orderHistory: results,
-		});
-    });
-});
+		})
+    })
+})
 
 // staff page
 app.get("/staff", isLoggedIn("Staff"), (request, response) => {
@@ -389,27 +389,10 @@ app.get("/manager/manage-employees/edit", isLoggedIn("Manager"), (request, respo
 	})
 })
 
-app.get(
-  "/manager/manage-employees/delete",
-  isLoggedIn("Manager"),
-
-  (request, response) => {
-    const { staffID } = request.query;
-
-    const sqlQuery = `UPDATE Staff SET Delete_Flag = ? WHERE Staff_ID = ?`;
-
-    connection.query(sqlQuery, [1, staffID], (error, results) => {
-      if (error) throw error;
-
-      response.redirect("/manager/manage-employees");
-    });
-  }
-);
-
 // 404 page
 app.use((request, response) => {
-  response.status(404);
-  response.render("404", {
-    title: "404",
-  });
-});
+	response.status(404);
+	response.render("404", {
+		title: "404",
+	})
+})
