@@ -129,14 +129,12 @@ app.post("/manager/manage-employees/delete", isLoggedIn("Manager"), (request, re
       })
 })
 
+// restock item
 app.post("/restock-item", isLoggedIn("Staff"), (request, response) => {
 	const formData = request.body;
+	const restockQuery = 'CALL RestockItem(?, ?, ?)';
 
-	console.log(formData);
-
-	const sqlUpdateQuery = `UPDATE Stock SET Count = ? WHERE Stock_ID = ?`
-
-	connection.query(sqlUpdateQuery, [parseInt(formData.newQty) + parseInt(formData.currentQty), formData.stockID], function (error, results){
+	connection.query(restockQuery, [parseInt(formData.newQty), parseInt(formData.currentQty), formData.stockID], function (error, results){
 		if (error) throw error;
 
 		response.redirect("/staff");
