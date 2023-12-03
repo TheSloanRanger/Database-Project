@@ -257,119 +257,110 @@ app.get("/customer", isLoggedIn("Customer"), (request, response) => {
   let orderBy;
 
   switch (filter) {
-    case "price_asc":
-      orderBy = "CostPrice ASC";
-      break;
-    case "name_desc":
-      orderBy = "Name DESC";
-      break;
-    case "name_asc":
-      orderBy = "Name ASC";
-      break;
-    default:
-      orderBy = "CostPrice DESC";
+		case "price_asc":
+			orderBy = "CostPrice ASC";
+			break;
+		case "name_desc":
+			orderBy = "Name DESC";
+			break;
+		case "name_asc":
+			orderBy = "Name ASC";
+			break;
+		default:
+			orderBy = "CostPrice DESC";
   }
 
-  let sqlQuery = `SELECT * FROM Stock`;
-  if (search) {
-    sqlQuery += ` WHERE Name LIKE '%${search}%'`;
-  }
-  sqlQuery += ` ORDER BY ${orderBy}`;
+  const sqlProcedure = 'CALL GetStockView(?, ?)';
 
-  connection.query(sqlQuery, (error, results, fields) => {
-    if (error) throw error;
+  connection.query(sqlProcedure, [search, orderBy], (error, results) => {
+		if (error) throw error;
 
-    response.render("customer", {
-      title: "Customer View",
-      banner_text: "Welcome, " + request.session.user.name,
-      nav_title: "Browse Products",
-      page: request.originalUrl,
-      filter: request.query.filter || "price_desc",
-      search: search,
-      user_session: request.session.user,
-      data: results,
-    });
-  });
+		response.render("customer", {
+			title: "Customer View",
+			banner_text: "Welcome, " + request.session.user.name,
+			nav_title: "Browse Products",
+			page: request.originalUrl,
+			filter: request.query.filter || "price_desc",
+			search: search,
+			user_session: request.session.user,
+			data: results[0],
+		});
+	});
 });
 
 // customer details page
 app.get("/customer/details", isLoggedIn("Customer"), (request, response) => {
-  sqlQuery = `SELECT * FROM Customer_Order_View WHERE CustomerID = ${request.session.user.customerId}`;
-  connection.query(sqlQuery, (error, results, fields) => {
-    response.render("customer_details", {
-      title: "Your Details",
-      banner_text: "Your Details",
-      nav_title: "My Account",
-      page: request.originalUrl,
-      user_session: request.session.user,
-      orderHistory: results,
+    sqlQuery = `SELECT * FROM Customer_Order_View WHERE CustomerID = ?`;
+    connection.query(sqlQuery, [request.session.user.customerId], (error, results, fields) => {
+		if (error) return error;
+
+		response.render("customer_details", {
+			title: "Your Details",
+			banner_text: "Your Details",
+			nav_title: "My Account",
+			page: request.originalUrl,
+			user_session: request.session.user,
+			orderHistory: results,
+		});
     });
-  });
 });
 
 // staff page
 app.get("/staff", isLoggedIn("Staff"), (request, response) => {
-  const filter = request.query.filter || "stock_desc";
-  const search = request.query.search || "";
-  let orderBy;
+	const filter = request.query.filter || "stock_desc";
+	const search = request.query.search || "";
+	let orderBy;
 
-  switch (filter) {
-    case "stock_asc":
-      orderBy = "Count ASC";
-      break;
-    case "name_desc":
-      orderBy = "Name DESC";
-      break;
-    case "name_asc":
-      orderBy = "Name ASC";
-      break;
-    default:
-      orderBy = "Count DESC";
-  }
+	switch (filter) {
+		case "stock_asc":
+		orderBy = "Count ASC";
+		break;
+		case "name_desc":
+		orderBy = "Name DESC";
+		break;
+		case "name_asc":
+		orderBy = "Name ASC";
+		break;
+		default:
+		orderBy = "Count DESC";
+	}
 
-  let stockQuery = `SELECT * FROM Stock`;
-  if (search) {
-    stockQuery += ` WHERE Name LIKE '%${search}%'`;
-  }
-  stockQuery += ` ORDER BY ${orderBy}`;
+	let stockQuery = `SELECT * FROM Stock WHERE Name LIKE ? ORDER BY ${orderBy}`;
 
-  const shiftQuery = `
-        SELECT Shift.Shift_ID, Shift.Start_Time, Shift.End_Time
-        FROM Shift
-        INNER JOIN Staff ON Shift.Shift_ID = Staff.Shift_ID
-        WHERE Staff.Staff_ID = ?
-    `;
+	const shiftQuery = `
+		SELECT Shift.Shift_ID, Shift.Start_Time, Shift.End_Time
+		FROM Shift
+		INNER JOIN Staff ON Shift.Shift_ID = Staff.Shift_ID
+		WHERE Staff.Staff_ID = ?
+	`;
 
-  orderQuery = `SELECT * FROM CFV WHERE Staff_ID = ${request.session.user.staffId}`;
+	orderQuery = `SELECT * FROM CFV WHERE Staff_ID = ?`;
 
-  connection.query(stockQuery, (stockError, stockResults, stockFields) => {
-    if (stockError) throw stockError;
+	connection.query(stockQuery, ['%'+search+'%'], (stockError, stockResults) => {
+		if (stockError) throw stockError;
 
-    connection.query(
-      shiftQuery,
-      [request.session.user.staffId],
-      (shiftError, shiftResults, shiftFields) => {
-        connection.query(
-          orderQuery,
-          (orderError, orderResults, orderFields) => {
-            response.render("staff", {
-              title: "Staff View",
-              banner_text: "Staff View",
-              nav_title: "Inventory Management",
-              page: request.originalUrl,
-              user_session: request.session.user,
-              stockData: stockResults,
-              shiftData: shiftResults,
-              filter: filter,
-              search: search,
-              orderHistory: orderResults,
-            });
-          }
-        );
-      }
-    );
-  });
-});
+		connection.query(shiftQuery, [request.session.user.staffId], (shiftError, shiftResults) => {
+			if (shiftError) throw shiftError;
+
+			connection.query(orderQuery, [request.session.user.staffId], (orderError, orderResults) => {
+				if (orderError) throw orderError;
+				
+				response.render("staff", {
+					title: "Staff View",
+					banner_text: "Staff View",
+					nav_title: "Inventory Management",
+					page: request.originalUrl,
+					user_session: request.session.user,
+					stockData: stockResults,
+					shiftData: shiftResults,
+					filter: filter,
+					search: search,
+					orderHistory: orderResults,
+				})
+			})
+		})
+	})
+})
 
 // Manager dashboard page
 app.get("/manager", isLoggedIn("Manager"), (request, response) => {

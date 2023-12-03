@@ -426,3 +426,17 @@ JOIN Staff ON Online_Order.Staff_ID = Staff.Staff_ID
 GROUP BY
     Online_Order.Order_ID, Online_Order.Staff_ID, Staff.Name;
 
+
+-- Stored procedure for getting stock products 
+DELIMITER $$
+CREATE DEFINER=`admin`@`%` PROCEDURE `GetStockView`(IN searchTerm VARCHAR(255), IN orderByColumn VARCHAR(255))
+BEGIN
+  SET @searchTerm = searchTerm;
+
+  SET @sqlQuery = CONCAT('SELECT * FROM Stock WHERE (Name LIKE CONCAT(\'%\', ?, \'%\') OR ? IS NULL) ORDER BY ', orderByColumn);
+
+  PREPARE stmt FROM @sqlQuery;
+  EXECUTE stmt USING @searchTerm, @searchTerm;
+  DEALLOCATE PREPARE stmt;
+END$$
+DELIMITER ;
