@@ -446,9 +446,9 @@ app.get("/manager/manage-employees", isLoggedIn("Manager"), (request, response) 
 app.get("/manager/manage-employees/edit", isLoggedIn("Manager"), (request, response) => {
 	const { staffID } = request.query;
 
-	const sqlQuery = `SELECT * FROM Staff WHERE Staff_ID = ${staffID}`;
+	const staffQuery = `SELECT * FROM Staff_View WHERE Staff_ID = ?`;
 
-	connection.query(sqlQuery, (error, results) => {
+	connection.query(staffQuery, [staffID], (error, results) => {
 		if (error) throw error;
 
 		response.render("employees_edit", {
