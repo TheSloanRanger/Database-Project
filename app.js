@@ -232,7 +232,6 @@ app.post("/order", isLoggedIn("Customer"), (request, response) => {
       const sqlSelectStockQuery = `SELECT * FROM Stock WHERE Stock_ID = ?`;
       const sqlInsertItemQuery = `INSERT INTO Item (Sup_ID, Stock_ID, ExpiryDate, Order_ID) VALUES (?, ?, ?, ?)`;
 
-      // make expiry a random date in the future
       const randomDate = new Date(
         new Date().getTime() +
           Math.random() * (1000000000000 - 1000000000) +
@@ -243,7 +242,7 @@ app.post("/order", isLoggedIn("Customer"), (request, response) => {
       connection.query(
         sqlInsertQuery,
         [results[0].Staff_ID, request.session.user.customerId],
-        function (error, results) {
+        function (error, insertOrderResults) {
           if (error) throw error;
 
           console.log("StockID: " + formData.stockID);
@@ -260,7 +259,7 @@ app.post("/order", isLoggedIn("Customer"), (request, response) => {
                   results[0].Sup_ID,
                   formData.stockID,
                   isoDateString,
-                  results[0].Order_ID,
+                  insertOrderResults.insertId,
                 ],
                 function (error, results) {
                   if (error) throw error;
