@@ -357,147 +357,109 @@ app.get("/staff", isLoggedIn("Staff"), (request, response) => {
 
 // Manager dashboard page
 app.get("/manager", isLoggedIn("Manager"), (request, response) => {
-  const bestSellingQuery = `
-    SELECT s.Name, COUNT(*) AS TotalSales
-    FROM Item i
-    JOIN Stock s ON i.Stock_ID = s.Stock_ID
-    JOIN Online_Order o ON i.Order_ID = o.Order_ID
-    GROUP BY s.Name
-    ORDER BY TotalSales DESC
-    LIMIT 3;
-  `;
+	const bestSellingQuery = `SELECT * FROM Best_Selling_View`;
+	const newCustomersQuery = `SELECT * FROM New_Customers_View`;
+	const totalRevenueQuery = `SELECT * FROM Total_Revenue_View`;
+	const totalOrdersQuery = `SELECT * FROM Total_Orders_View`;
+	const employeePerformanceQuery = `SELECT * FROM Employee_Performance_View`;
 
-  const newCustomersQuery = `
-    SELECT COUNT(DISTINCT Cust_ID) AS NewCustomers
-    FROM Online_Order;
-  `;
+	// Query for best selling products
+	connection.query(bestSellingQuery, (bestSellingError, bestSellingResults) => {
+		if (bestSellingError) {
+			console.error('Error fetching best-selling products:', bestSellingError);
+			response.status(500).send("Error fetching best-selling products");
+			return;
+		}
 
-  const totalRevenueQuery = `
-    SELECT ROUND(SUM(s.CostPrice), 2) AS Revenue
-    FROM Item i
-    JOIN Stock s ON i.Stock_ID = s.Stock_ID;
-  `;
+		// Query for new customers
+		connection.query(newCustomersQuery, (newCustomersError, newCustomersResults) => {
+			if (newCustomersError) {
+				console.error('Error fetching new customers:', newCustomersError);
+				response.status(500).send("Error fetching new customers");
+				return;
+			}
 
-  const totalOrdersQuery = `
-    SELECT COUNT(DISTINCT Order_ID) AS TotalOrders
-    FROM Online_Order;
-  `;
+			// Query for total revenue
+			connection.query(totalRevenueQuery, (totalRevenueError, totalRevenueResults) => {
+				if (totalRevenueError) {
+					console.error('Error fetching revenue:', totalRevenueError);
+					response.status(500).send("Error fetching revenue");
+					return;
+				}
 
-  const employeePerformanceQuery = `
-    SELECT st.Name, COUNT(DISTINCT oo.Order_ID) AS NumberOfOrders, ROUND(SUM(s.CostPrice), 2) AS Revenue
-    FROM Staff st
-    LEFT JOIN Online_Order oo ON st.Staff_ID = oo.Staff_ID
-    LEFT JOIN Item i ON oo.Order_ID = i.Order_ID
-    LEFT JOIN Stock s ON i.Stock_ID = s.Stock_ID
-    GROUP BY st.Name;
-  `;
+				// Query for total orders
+				connection.query(totalOrdersQuery, (totalOrdersError, totalOrdersResults) => {
+					if (totalOrdersError) {
+						console.error('Error fetching total orders:', totalOrdersError);
+						response.status(500).send("Error fetching total orders");
+						return;
+					}
 
-  // Query for best selling products
-  connection.query(bestSellingQuery, (bestSellingError, bestSellingResults) => {
-    if (bestSellingError) {
-      console.error('Error fetching best-selling products:', bestSellingError);
-      response.status(500).send("Error fetching best-selling products");
-      return;
-    }
+					// Query for employee performance
+					connection.query(employeePerformanceQuery, (employeePerformanceError, employeePerformanceResults) => {
+						if (employeePerformanceError) {
+							console.error('Error fetching employee performance:', employeePerformanceError);
+							response.status(500).send("Error fetching employee performance");
+							return;
+						}
 
-    // Query for new customers
-    connection.query(newCustomersQuery, (newCustomersError, newCustomersResults) => {
-      if (newCustomersError) {
-        console.error('Error fetching new customers:', newCustomersError);
-        response.status(500).send("Error fetching new customers");
-        return;
-      }
+						// Sort employee performance data by number of orders by default
+						employeePerformanceResults.sort((a, b) => b.NumberOfOrders - a.NumberOfOrders);
 
-      // Query for total revenue
-      connection.query(totalRevenueQuery, (totalRevenueError, totalRevenueResults) => {
-        if (totalRevenueError) {
-          console.error('Error fetching revenue:', totalRevenueError);
-          response.status(500).send("Error fetching revenue");
-          return;
-        }
-
-        // Query for total orders
-        connection.query(totalOrdersQuery, (totalOrdersError, totalOrdersResults) => {
-          if (totalOrdersError) {
-            console.error('Error fetching total orders:', totalOrdersError);
-            response.status(500).send("Error fetching total orders");
-            return;
-          }
-
-          // Query for employee performance
-          connection.query(employeePerformanceQuery, (employeePerformanceError, employeePerformanceResults) => {
-            if (employeePerformanceError) {
-              console.error('Error fetching employee performance:', employeePerformanceError);
-              response.status(500).send("Error fetching employee performance");
-              return;
-            }
-
-            // Sort employee performance data by number of orders by default
-            employeePerformanceResults.sort((a, b) => b.NumberOfOrders - a.NumberOfOrders);
-
-            // Render the dashboard view with all results
-            response.render("dashboard", {
-              title: "Manager View",
-              banner_text: "Welcome, John Doe",
-              nav_title: "Dashboard",
-              user_session: request.session.user,
-              bestSellingProducts: bestSellingResults,
-              newCustomers: newCustomersResults[0].NewCustomers,
-              revenue: totalRevenueResults[0].Revenue,
-              totalOrders: totalOrdersResults[0].TotalOrders,
-              employeePerformance: employeePerformanceResults
-            });
-          });
-        });
-      });
-    });
-  });
-});
+						// Render the dashboard view with all results
+						response.render("dashboard", {
+							title: "Manager View",
+							banner_text: "Welcome, John Doe",
+							nav_title: "Dashboard",
+							user_session: request.session.user,
+							bestSellingProducts: bestSellingResults,
+							newCustomers: newCustomersResults[0].NewCustomers,
+							revenue: totalRevenueResults[0].Revenue,
+							totalOrders: totalOrdersResults[0].TotalOrders,
+							employeePerformance: employeePerformanceResults
+						})
+					})
+				})
+			})
+		})
+	})
+})
 
 // manager manage employees page
-app.get(
-  "/manager/manage-employees",
-  isLoggedIn("Manager"),
-  (request, response) => {
-    const sqlQuery = `SELECT * FROM Staff WHERE Delete_Flag = 0`;
+app.get("/manager/manage-employees", isLoggedIn("Manager"), (request, response) => {
+	const sqlQuery = `SELECT * FROM Staff_View WHERE Delete_Flag = 0`;
 
     connection.query(sqlQuery, (error, results) => {
-      if (error) throw error;
+		if (error) throw error;
 
-      response.render("manage-employees", {
-        title: "Manager View",
-        banner_text: "Welcome " + request.session.user.name,
-        nav_title: "Manage Employees",
-        user_session: request.session.user,
-        data: results,
-      });
-    });
-  }
-);
+		response.render("manage-employees", {
+			title: "Manager View",
+			banner_text: "Welcome " + request.session.user.name,
+			nav_title: "Manage Employees",
+			user_session: request.session.user,
+			data: results,
+		})
+	})
+})
 
 // manager employee edit page
-app.get(
-  "/manager/manage-employees/edit",
-  isLoggedIn("Manager"),
+app.get("/manager/manage-employees/edit", isLoggedIn("Manager"), (request, response) => {
+	const { staffID } = request.query;
 
-  (request, response) => {
-    const { staffID } = request.query;
+	const sqlQuery = `SELECT * FROM Staff WHERE Staff_ID = ${staffID}`;
 
-    const sqlQuery = `SELECT * FROM Staff WHERE Staff_ID = ${staffID}`;
+	connection.query(sqlQuery, (error, results) => {
+		if (error) throw error;
 
-    connection.query(sqlQuery, (error, results) => {
-      if (error) throw error;
-
-      response.render("employees_edit", {
-        title: "Edit Employee",
-        banner_text: "Welcome " + request.session.user.name,
-        nav_title: "Edit Employee",
-        user_session: request.session.user,
-        data: results,
-      });
-    });
-  }
-);
+		response.render("employees_edit", {
+			title: "Edit Employee",
+			banner_text: "Welcome " + request.session.user.name,
+			nav_title: "Edit Employee",
+			user_session: request.session.user,
+			data: results,
+		})
+	})
+})
 
 app.get(
   "/manager/manage-employees/delete",
