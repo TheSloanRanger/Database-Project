@@ -350,7 +350,7 @@ app.get("/manager", isLoggedIn("Manager"), (request, response) => {
 						// Render the dashboard view with all results
 						response.render("dashboard", {
 							title: "Manager View",
-							banner_text: "Welcome, John Doe",
+							banner_text: "Welcome " + request.session.user.name,
 							nav_title: "Dashboard",
 							user_session: request.session.user,
 							bestSellingProducts: bestSellingResults,
