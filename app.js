@@ -92,8 +92,9 @@ app.post("/login-form", async (request, response) => {
 // update customer details
 app.post("/customer/details/update", isLoggedIn("Customer"), (request, response) => {
     const formData = request.body;
+	const updateQuery = 'CALL UpdateCustomerDetails(?, ?, ?, ?)';
 
-    connection.query('CALL UpdateCustomerDetails(?, ?, ?, ?)', [formData.name, formData.address, formData.phone, request.session.user.customerId], function (error, results) {
+    connection.query(updateQuery, [formData.name, formData.address, formData.phone, request.session.user.customerId], function (error, results) {
 		if (error) throw error;
 
 		request.session.user.name = formData.name;
@@ -104,32 +105,17 @@ app.post("/customer/details/update", isLoggedIn("Customer"), (request, response)
 	})
 })
 
-app.post(
-  "/manager/manage-employees/edit/update",
-  isLoggedIn("Manager"),
-  (request, response) => {
+// update employee details
+app.post("/manager/manage-employees/edit/update",isLoggedIn("Manager"),(request, response) => {
     const formData = request.body;
+	const updateQuery = 'CALL UpdateEmployeeDetails(?, ?, ?, ?, ?)';
 
-    const sqlUpdateQuery =
-      "UPDATE Staff SET Name = ?, Address = ?, Email = ?, Phone_No = ? WHERE Staff_ID = ?";
+    connection.query(updateQuery,[formData.name, formData.address, formData.email, formData.phone, formData.employee_edit,], function (error, results) {
+		if (error) throw error;
 
-    connection.query(
-      sqlUpdateQuery,
-      [
-        formData.name,
-        formData.address,
-        formData.email,
-        formData.phone,
-        formData.employee_edit,
-      ],
-      function (error, results) {
-        if (error) throw error;
-
-        response.redirect("/manager/manage-employees");
-      }
-    );
-  }
-);
+		response.redirect("/manager/manage-employees");
+	})
+})
 
 app.post(
   "/manager/manage-employees/delete",
