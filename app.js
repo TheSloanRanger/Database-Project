@@ -325,18 +325,11 @@ app.get("/staff", isLoggedIn("Staff"), (request, response) => {
 		orderBy = "Count DESC";
 	}
 
-	let stockQuery = `SELECT * FROM Stock WHERE Name LIKE ? ORDER BY ${orderBy}`;
+	const stockProcedure = 'CALL GetStockView(?, ?)';
+	const shiftQuery = `SELECT * FROM StaffShiftView WHERE Staff_ID = ?`;
+	const orderQuery = `SELECT * FROM CFV WHERE Staff_ID = ?`;
 
-	const shiftQuery = `
-		SELECT Shift.Shift_ID, Shift.Start_Time, Shift.End_Time
-		FROM Shift
-		INNER JOIN Staff ON Shift.Shift_ID = Staff.Shift_ID
-		WHERE Staff.Staff_ID = ?
-	`;
-
-	orderQuery = `SELECT * FROM CFV WHERE Staff_ID = ?`;
-
-	connection.query(stockQuery, ['%'+search+'%'], (stockError, stockResults) => {
+	connection.query(stockProcedure, [search, orderBy], (stockError, stockResults) => {
 		if (stockError) throw stockError;
 
 		connection.query(shiftQuery, [request.session.user.staffId], (shiftError, shiftResults) => {
@@ -351,7 +344,7 @@ app.get("/staff", isLoggedIn("Staff"), (request, response) => {
 					nav_title: "Inventory Management",
 					page: request.originalUrl,
 					user_session: request.session.user,
-					stockData: stockResults,
+					stockData: stockResults[0],
 					shiftData: shiftResults,
 					filter: filter,
 					search: search,
