@@ -249,6 +249,7 @@ SELECT
     Account.UserID AS AccountID,
     Account.email,
     Account.UserType,
+    Account.Password,
     CASE
         WHEN Account.UserType = 'Customer' THEN Customer.Name
         WHEN Account.UserType = 'Manager' THEN Staff.Name

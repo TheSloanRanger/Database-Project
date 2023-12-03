@@ -45,85 +45,49 @@ app.use(
   })
 );
 
-// handle login form submissions **validate logins against db here**
+// handle login form submissions
 app.post("/login-form", async (request, response) => {
-  const formData = request.body; // email/password from login form
+	const formData = request.body; // email/password from login form
+	const loginQuery = `SELECT * FROM LoginView WHERE email = ?`;
 
-  connection.query(
-    "SELECT * FROM `Account` WHERE `email` = ?",
-    [formData.email],
-    async function (error, authResults) {
-      if (error) throw error;
+	connection.query(loginQuery, [formData.email], async function (error, authResults) {
+		if (error) throw error;
 
-      const match = await bcrypt.compare(
-        formData.password,
-        authResults[0].password
-      );
+		const match = await bcrypt.compare(
+			formData.password,
+			authResults[0].Password
+		)
 
-      if (!match) {
-        response.redirect("/login");
-      } else if (authResults[0].UserType == "Customer") {
-        connection.query(
-          "SELECT * FROM `Customer` WHERE `Email` = ?",
-          [formData.email],
-          function (error, customerResults) {
-            if (error) throw error;
-
-            request.session.user = {
-              customerId: customerResults[0].CustomerID,
-              name: customerResults[0].Name,
-              email: customerResults[0].Email,
-              type: authResults[0].UserType,
-              address: customerResults[0].Address,
-              phone: customerResults[0].PhoneNo,
-            };
-            response.redirect("/" + authResults[0].UserType);
-          }
-        );
-      } else if (authResults[0].UserType == "Staff") {
-        connection.query(
-          "SELECT * FROM `Staff` WHERE `email` = ?",
-          [formData.email],
-          function (error, staffResults) {
-            if (error) throw error;
-
-            request.session.user = {
-              staffId: staffResults[0].Staff_ID,
-              branchId: staffResults[0].Branch_ID,
-              shiftId: staffResults[0].Shift_ID,
-              name: staffResults[0].Name,
-              email: staffResults[0].Email,
-              type: authResults[0].UserType,
-              address: staffResults[0].Address,
-              phone: staffResults[0].PhoneNo,
-            };
-            response.redirect("/" + authResults[0].UserType);
-          }
-        );
-      } else if (authResults[0].UserType == "Manager") {
-        connection.query(
-          "SELECT * FROM `Staff` WHERE `email` = ?",
-          [formData.email],
-          function (error, managerResults) {
-            if (error) throw error;
-
-            request.session.user = {
-              staffId: managerResults[0].Staff_ID,
-              branchId: managerResults[0].Branch_ID,
-              shift_ID: managerResults[0].Shift_ID,
-              name: managerResults[0].Name,
-              email: managerResults[0].Email,
-              type: authResults[0].UserType,
-              address: managerResults[0].Address,
-              phone: managerResults[0].PhoneNo,
-            };
-            response.redirect("/" + authResults[0].UserType);
-          }
-        );
-      }
-    }
-  );
-});
+		if (!match) {
+			response.redirect("/login");
+		} else if (authResults[0].UserType == "Customer") {
+			request.session.user = {
+				customerId: authResults[0].ID,
+				name: authResults[0].Name,
+				email: authResults[0].Email,
+				type: authResults[0].UserType,
+				address: authResults[0].Address,
+				phone: authResults[0].PhoneNo,
+			}
+			response.redirect("/" + authResults[0].UserType);
+		} else if (authResults[0].UserType == "Staff" || authResults[0].UserType == "Manager") {
+			connection.query("SELECT * FROM `Staff_View` WHERE `email` = ?", [formData.email], function (error, staffResults) {
+				if (error) throw error;
+				request.session.user = {
+					staffId: staffResults[0].Staff_ID,
+					branchId: staffResults[0].Branch_ID,
+					shiftId: staffResults[0].Shift_ID,
+					name: staffResults[0].Name,
+					email: staffResults[0].Email,
+					type: authResults[0].UserType,
+					address: staffResults[0].Address,
+					phone: staffResults[0].PhoneNo,
+				}
+				response.redirect("/" + authResults[0].UserType);
+			})
+		}
+	})
+})
 
 app.post(
   "/customer/details/update",
