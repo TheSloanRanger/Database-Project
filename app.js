@@ -106,35 +106,29 @@ app.post("/customer/details/update", isLoggedIn("Customer"), (request, response)
 })
 
 // update employee details
-app.post("/manager/manage-employees/edit/update",isLoggedIn("Manager"),(request, response) => {
+app.post("/manager/manage-employees/edit/update", isLoggedIn("Manager"), (request, response) => {
     const formData = request.body;
 	const updateQuery = 'CALL UpdateEmployeeDetails(?, ?, ?, ?, ?)';
 
-    connection.query(updateQuery,[formData.name, formData.address, formData.email, formData.phone, formData.employee_edit,], function (error, results) {
+    connection.query(updateQuery, [formData.name, formData.address, formData.email, formData.phone, formData.employee_edit,], function (error, results) {
 		if (error) throw error;
 
 		response.redirect("/manager/manage-employees");
 	})
 })
 
-app.post(
-  "/manager/manage-employees/delete",
-  isLoggedIn("Manager"),
-  (request, response) => {
+// delete employee
+app.post("/manager/manage-employees/delete", isLoggedIn("Manager"), (request, response) => {
     const formData = request.body;
+	const deleteQuery = 'CALL DeleteEmployee(?)';
 
-    const sqlDeleteQuery = "DELETE FROM Staff WHERE Staff_ID = ?";
-    connection.query(
-      sqlDeleteQuery,
-      [formData.employee_delete],
-      function (error, results) {
+    connection.query(deleteQuery, [formData.employee_delete], function (error, results) {
         if (error) throw error;
 
         response.redirect("/manager/manage-employees");
-      }
-    );
-  }
-);
+      })
+})
+
 app.post("/restock-item", isLoggedIn("Staff"), (request, response) => {
 	const formData = request.body;
 
