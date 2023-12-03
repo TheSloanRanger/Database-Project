@@ -138,9 +138,64 @@ app.post("/restock-item", isLoggedIn("Staff"), (request, response) => {
 		if (error) throw error;
 
 		response.redirect("/staff");
-	})
+		}
+	)
 })
 
+app.post("/order", isLoggedIn("Customer"), (request, response) => {
+  const formData = request.body;
+
+  connection.query(
+    `SELECT * FROM Staff ORDER BY RAND() LIMIT 1`,
+    function (error, results) {
+      if (error) throw error;
+
+      const sqlInsertQuery = `INSERT INTO Online_Order (Staff_ID, Cust_ID) VALUES (?, ?)`;
+      const sqlSelectStockQuery = `SELECT * FROM Stock WHERE Stock_ID = ?`;
+      const sqlInsertItemQuery = `INSERT INTO Item (Sup_ID, Stock_ID, ExpiryDate, Order_ID) VALUES (?, ?, ?, ?)`;
+
+      const randomDate = new Date(
+        new Date().getTime() +
+          Math.random() * (1000000000000 - 1000000000) +
+          1000000000
+      );
+      const isoDateString = randomDate.toJSON().slice(0, 19).replace("T", " ");
+
+      connection.query(
+        sqlInsertQuery,
+        [results[0].Staff_ID, request.session.user.customerId],
+        function (error, insertOrderResults) {
+          if (error) throw error;
+
+          console.log("StockID: " + formData.stockID);
+          connection.query(
+            sqlSelectStockQuery,
+            [formData.stockID],
+            function (error, results) {
+              if (error) throw error;
+
+              console.log("StockID: " + formData.stockID);
+              connection.query(
+                sqlInsertItemQuery,
+                [
+                  results[0].Sup_ID,
+                  formData.stockID,
+                  isoDateString,
+                  insertOrderResults.insertId,
+                ],
+                function (error, results) {
+                  if (error) throw error;
+
+                  response.redirect("/customer");
+                }
+              );
+            }
+          );
+        }
+      );
+    }
+  );
+});
 
 // destroy session on logout
 app.get("/logout", (request, response) => {
