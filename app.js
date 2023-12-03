@@ -355,7 +355,7 @@ app.get("/customer", isLoggedIn("Customer"), (request, response) => {
 
 // customer details page
 app.get("/customer/details", isLoggedIn("Customer"), (request, response) => {
-  sqlQuery = `SELECT * FROM Customer_Order_View WHERE CustomerID = ${request.session.user.customerId}`;
+  sqlQuery = `SELECT * FROM Customer_Order_View WHERE CustomerID = ${request.session.user.customerId} ORDER BY Order_ID DESC`;
   connection.query(sqlQuery, (error, results, fields) => {
     response.render("customer_details", {
       title: "Your Details",
