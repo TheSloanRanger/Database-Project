@@ -441,3 +441,152 @@ BEGIN
   DEALLOCATE PREPARE stmt;
 END$$
 DELIMITER ;
+
+
+-- Delete Employee Stored Procedure
+DELIMITER $$
+CREATE DEFINER=`admin`@`%` PROCEDURE `DeleteEmployee`(
+    IN p_StaffID INT
+)
+BEGIN
+    UPDATE `Staff`
+    SET
+        `Delete_Flag` = 1
+    WHERE
+        `Staff_ID` = p_StaffID;
+END$$
+DELIMITER ;
+
+
+-- GetStockView Stored Procedure
+DELIMITER $$
+CREATE DEFINER=`admin`@`%` PROCEDURE `GetStockView`(IN searchTerm VARCHAR(255), IN orderByColumn VARCHAR(255))
+BEGIN
+  SET @searchTerm = searchTerm;
+
+  SET @sqlQuery = CONCAT('SELECT * FROM Stock WHERE (Name LIKE CONCAT(\'%\', ?, \'%\') OR ? IS NULL) ORDER BY ', orderByColumn);
+
+  PREPARE stmt FROM @sqlQuery;
+  EXECUTE stmt USING @searchTerm, @searchTerm;
+  DEALLOCATE PREPARE stmt;
+END$$
+DELIMITER ;
+
+
+--Login Authentication Stored Procedure
+DELIMITER $$
+CREATE DEFINER=`admin`@`%` PROCEDURE `LoginAuthentication`(
+    IN p_email VARCHAR(50),
+    IN p_password VARCHAR(50),
+    OUT result INT
+)
+BEGIN
+    DECLARE user_count INT;
+    -- Check if the username and password match any record
+    SELECT COUNT(*)
+    INTO user_count
+    FROM Account
+    WHERE email = p_username AND password = p_password;
+    -- Set the result based on the count
+    IF user_count > 0 THEN
+        SET result = 1; -- Authentication successful
+    ELSE
+        SET result = 0; -- Authentication failed
+    END IF;
+END$$
+DELIMITER ;
+
+
+-- Place Order Stored Procedure
+DELIMITER $$
+CREATE DEFINER=`admin`@`%` PROCEDURE `PlaceOrder`(
+    IN p_StockID INT,
+    IN p_CustomerID INT
+)
+BEGIN
+    DECLARE randomStaffID INT;
+    DECLARE supID INT;
+    DECLARE expiryDate DATETIME;
+
+    -- Select a random staff member
+    SELECT Staff_ID INTO randomStaffID
+    FROM Staff_View
+    ORDER BY RAND()
+    LIMIT 1;
+
+    -- Insert into Online_Order table
+    INSERT INTO Online_Order (Staff_ID, Cust_ID)
+    VALUES (randomStaffID, p_CustomerID);
+
+    -- Select stock information
+    SELECT Sup_ID, ExpiryDate INTO supID, expiryDate
+    FROM Stock_View
+    WHERE Stock_ID = p_StockID;
+
+    -- Insert into Item table
+    INSERT INTO Item (Sup_ID, Stock_ID, ExpiryDate, Order_ID)
+    VALUES (supID, p_StockID, expiryDate, LAST_INSERT_ID());
+
+END$$
+DELIMITER ;
+
+
+-- Restock Item Stored Procedure
+DELIMITER $$
+CREATE DEFINER=`admin`@`%` PROCEDURE `RestockItem`(
+    IN p_NewQty INT,
+    IN p_CurrentQty INT,
+    IN p_StockID INT
+)
+BEGIN
+    UPDATE `Stock`
+    SET
+        `Count` = p_NewQty + p_CurrentQty
+    WHERE
+        `Stock_ID` = p_StockID;
+END$$
+DELIMITER ;
+
+
+-- UpdateCustomerDetails Stored Procedure
+DELIMITER $$
+CREATE DEFINER=`admin`@`%` PROCEDURE `UpdateCustomerDetails`(
+    IN p_Name VARCHAR(255),
+    IN p_Address VARCHAR(255),
+    IN p_PhoneNo VARCHAR(15),
+    IN p_CustomerID INT
+)
+BEGIN
+    UPDATE `Customer`
+    SET
+        `Name` = p_Name,
+        `Address` = p_Address,
+        `PhoneNo` = p_PhoneNo
+    WHERE
+        `CustomerID` = p_CustomerID;
+END$$
+DELIMITER ;
+
+
+-- Update Employee Details Stored Procedure
+DELIMITER $$
+CREATE DEFINER=`admin`@`%` PROCEDURE `UpdateEmployeeDetails`(
+    IN p_Name VARCHAR(255),
+    IN p_Address VARCHAR(255),
+    IN p_Email VARCHAR(255),
+    IN p_PhoneNo VARCHAR(15),
+    IN p_StaffID INT
+)
+BEGIN
+    UPDATE `Staff`
+    SET
+        `Name` = p_Name,
+        `Address` = p_Address,
+        `Email` = p_Email,
+        `Phone_No` = p_PhoneNo
+    WHERE
+        `Staff_ID` = p_StaffID;
+END$$
+DELIMITER ;
+
+
