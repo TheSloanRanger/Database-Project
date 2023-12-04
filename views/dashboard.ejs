@@ -10,7 +10,7 @@
 	
 	<!-- Title row that spans full width on medium screens and above -->
 	<div class="col-span-1 md:col-span-2 flex justify-center md:justify-start">
-		<h2 class="text-3xl font-semibold -mb-6">Sales</h2>
+		<h2 class="text-4xl font-semibold mx-auto -mb-6">Sales</h2>
 	</div>
 
       <!-- Best Selling Table -->
@@ -18,14 +18,14 @@
         <table class="table-auto w-full">
           <thead class="bg-primary">
             <tr>
-              <th colspan="2" class="text-white text-3xl p-4">Best Selling</th>
+              <th colspan="2" class="text-white text-xl p-4">Best Selling</th>
             </tr>
           </thead>
-          <tbody class="text-center text-xl text-gray-700">
+          <tbody class="text-center text-gray-700">
             <% bestSellingProducts.forEach(function(product) { %>
               <tr>
                 <td class="px-4 py-2 border-b border-gray-200"><%= product.Name %></td>
-                <td class="px-4 py-2 border-b border-gray-200"><%= product.TotalSales %> Sales</td>
+                <td class="px-4 py-2 border-b border-gray-200"><span class="font-medium"><%= product.TotalSales %></span> Sales</td>
               </tr>
             <% }) %>
           </tbody>
@@ -37,10 +37,10 @@
         <table class="w-full">
           <thead class="bg-primary">
             <tr>
-              <th class="text-white text-3xl p-4">New Customers</th>
+              <th class="text-white text-xl p-4">New Customers</th>
             </tr>
           </thead>
-          <tbody class="text-center text-5xl text-gray-700">
+          <tbody class="text-center text-4xl font-semibold text-gray-700">
             <tr>
               <td class="py-10"><%= newCustomers %></td>
             </tr>
@@ -53,10 +53,10 @@
         <table class="w-full">
           <thead class="bg-primary">
             <tr>
-              <th class="text-white text-3xl p-4">Revenue</th>
+              <th class="text-white text-xl p-4">Revenue</th>
             </tr>
           </thead>
-          <tbody class="text-center text-5xl text-gray-700">
+          <tbody class="text-center text-4xl font-semibold text-gray-700">
             <tr>
               <td class="py-10">£<%= revenue %></td>
             </tr>
@@ -69,10 +69,10 @@
         <table class="w-full">
           <thead class="bg-primary">
             <tr>
-              <th class="text-white text-3xl p-4">Total Orders</th>
+              <th class="text-white text-xl p-4">Total Orders</th>
             </tr>
           </thead>
-          <tbody class="text-center text-5xl text-gray-700">
+          <tbody class="text-center text-4xl font-semibold text-gray-700">
             <tr>
               <td class="py-10"><%= totalOrders %></td>
             </tr>
@@ -85,7 +85,7 @@
    <!-- Employee Performance Table -->
    <div class="employee-performance-container mt-20">
     <div class="container mx-auto flex justify-between items-center pb-4">
-      <span class="text-5xl font-medium">Employee Performance</span>
+      <span class="text-3xl font-semibold ">Employee Performance</span>
       <select class="p-2 rounded-lg border border-gray-300" id="sort-select">
         <option value="alphabetical" selected>Sort Alphabetically</option>
         <option value="numberOfOrders">Sort by No. of Orders</option>
@@ -97,17 +97,17 @@
         <table class="w-full table-fixed" id="employee-performance-table">
           <thead class="bg-primary uppercase">
             <tr>
-              <th class="text-white text-xl text-center p-4 w-1/3">Employee</th>
-              <th class="text-white text-xl text-center p-4 w-1/3">No. of Orders</th>
-              <th class="text-white text-xl text-center p-4 w-1/3">Revenue</th>
+              <th class="text-white text-center p-4 w-1/3">Employee</th>
+              <th class="text-white text-center p-4 w-1/3">No. of Orders</th>
+              <th class="text-white text-center p-4 w-1/3">Revenue</th>
             </tr>
           </thead>
           <tbody class="text-gray-700">
             <% employeePerformance.forEach(function(employee) { %>
               <tr>
-                <td class="border-b border-gray-200 text-lg text-center p-4"><%= employee.Name %></td>
-                <td class="border-b border-gray-200 text-lg text-center p-4"><%= employee.NumberOfOrders %></td>
-                <td class="border-b border-gray-200 text-lg text-center p-4">£<%= employee.Revenue %></td>
+                <td class="border-b border-gray-200 text-center p-4"><%= employee.Name %></td>
+                <td class="border-b border-gray-200 text-center p-4"><%= employee.NumberOfOrders %></td>
+                <td class="border-b border-gray-200 text-center p-4">£<%= Number(employee.Revenue).toFixed(2) %></td>
               </tr>
             <% }); %>
           </tbody>
