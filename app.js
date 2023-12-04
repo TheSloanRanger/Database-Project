@@ -178,6 +178,23 @@ app.post(
   }
 );
 
+app.get(
+	"/manager/manage-employees/delete",
+	isLoggedIn("Manager"),
+  
+	(request, response) => {
+	  const { staffID } = request.query;
+  
+	  const deleteQuery = 'CALL DeleteEmployee(?)';
+  
+	  connection.query(deleteQuery, [staffID], (error, results) => {
+		if (error) throw error;
+  
+		response.redirect("/manager/manage-employees");
+	  });
+	}
+  );
+
 // restock item
 app.post("/restock-item", isLoggedIn("Staff"), (request, response) => {
   const formData = request.body;
