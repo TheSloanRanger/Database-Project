@@ -195,6 +195,23 @@ app.get(
 	}
   );
 
+  app.get(
+	"/manager/manage-employees/enable",
+	isLoggedIn("Manager"),
+  
+	(request, response) => {
+	  const { staffID } = request.query;
+  
+	  const deleteQuery = 'CALL EnableEmployee(?)';
+  
+	  connection.query(deleteQuery, [staffID], (error, results) => {
+		if (error) throw error;
+  
+		response.redirect("/manager/manage-employees");
+	  });
+	}
+  );
+
 // restock item
 app.post("/restock-item", isLoggedIn("Staff"), (request, response) => {
   const formData = request.body;
@@ -486,7 +503,7 @@ app.get(
   "/manager/manage-employees",
   isLoggedIn("Manager"),
   (request, response) => {
-    const sqlQuery = `SELECT * FROM Staff_View WHERE Delete_Flag = 0`;
+    const sqlQuery = `SELECT * FROM Staff_View`;
 
     connection.query(sqlQuery, (error, results) => {
       if (error) throw error;

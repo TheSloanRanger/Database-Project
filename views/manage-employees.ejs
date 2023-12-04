@@ -34,7 +34,7 @@
               Staff
             </td>
             <td class="py-4 px-6 border-b border-gray-200 text-center">
-              Active
+              <%= data[i].Delete_Flag == 0 ? 'Active':'Inactive' %>
             </td>
             <td class="py-4 px-6 border-b border-gray-200 text-center">
               <a
@@ -42,11 +42,19 @@
                 class="text-blue-600 hover:text-blue-800"
                 >Edit</a
               >
-              <a
+              <% if (data[i].Delete_Flag == 0){ %>
+                <a
                 href="/manager/manage-employees/delete?staffID=<%= data[i].Staff_ID %>"
                 class="text-red-600 hover:text-red-800 ml-4"
-                >Delete</a
-              >
+                >Disable</a>
+              <% } else { %>
+                <a
+                href="/manager/manage-employees/enable?staffID=<%= data[i].Staff_ID %>"
+                class="text-green-600 hover:text-green-600 ml-4"
+                >Enable</a>
+                </a>
+              <% } %>
+              
             </td>
           </tr>
           <% } %>
