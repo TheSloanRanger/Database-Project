@@ -34,7 +34,8 @@
               Staff
             </td>
             <td class="py-4 px-6 border-b border-gray-200 text-center">
-              Active
+              <% if (data[i].Delete_Flag == 1) { %> Active <% } else { %>
+              Inactive <% } %>
             </td>
             <td class="py-4 px-6 border-b border-gray-200 text-center">
               <a

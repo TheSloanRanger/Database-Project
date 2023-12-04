@@ -469,7 +469,7 @@ app.get(
   "/manager/manage-employees",
   isLoggedIn("Manager"),
   (request, response) => {
-    const sqlQuery = `SELECT * FROM Staff_View WHERE Delete_Flag = 0`;
+    const sqlQuery = `SELECT * FROM Staff_View`;
 
     connection.query(sqlQuery, (error, results) => {
       if (error) throw error;
