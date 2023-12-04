@@ -590,3 +590,59 @@ END$$
 DELIMITER ;
 
 
+-- Staff Shift View
+CREATE VIEW StaffShiftView AS
+    SELECT Shift.Shift_ID, Shift.Start_Time, Shift.End_Time
+    FROM Shift
+    INNER JOIN Staff ON Shift.Shift_ID = Staff.Shift_ID;
+
+
+-- Best Selling View
+CREATE VIEW Best_Selling_View AS
+    SELECT
+		Stock.Stock_ID,
+		Stock.Name AS StockName,
+		Stock.CostPrice,
+		Stock.Sup_ID AS StockSupplierID,
+		COUNT(Item.Stock_ID) AS NumberOfItems
+	FROM
+		Stock
+	LEFT JOIN Item ON Stock.Stock_ID = Item.Stock_ID
+	GROUP BY
+		Stock.Stock_ID, Stock.Name, Stock.CostPrice, Stock.Sup_ID
+	ORDER BY
+		NumberOfItems DESC;
+
+
+-- Employee Performance View
+CREATE VIEW Employee_Performance AS
+    SELECT st.Name, COUNT(DISTINCT oo.Order_ID) AS NumberOfOrders, ROUND(SUM(s.CostPrice), 2) AS Revenue
+    FROM Staff st
+    LEFT JOIN Online_Order oo ON st.Staff_ID = oo.Staff_ID
+    LEFT JOIN Item i ON oo.Order_ID = i.Order_ID
+    LEFT JOIN Stock s ON i.Stock_ID = s.Stock_ID
+    GROUP BY st.Name;
+
+
+-- New Customers View
+CREATE VIEW New_Customers_View AS
+    SELECT COUNT(DISTINCT Cust_ID) AS NewCustomers
+    FROM Online_Order;
+
+
+-- Stock View
+CREATE VIEW Stock_View AS
+    SELECT * FROM Stock
+
+
+-- Total Orders View
+CREATE View Total_Orders_View AS
+    SELECT COUNT(DISTINCT Order_ID) AS TotalOrders
+    FROM Online_Order;
+
+
+-- Total Revenue View
+CREATE VIEW Total_Revenue_View AS
+    SELECT ROUND(SUM(s.CostPrice), 2) AS Revenue
+    FROM Item i
+    JOIN Stock s ON i.Stock_ID = s.Stock_ID;
